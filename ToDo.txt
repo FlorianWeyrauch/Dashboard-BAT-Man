@@ -1,0 +1,165 @@
+1. Bausteine / Komponenten
+
+    -   Client (Browser, PC & Handy)
+
+    -   HTML-Formulare:
+        -   Vorname + Nachname eingeben
+        -   Einmal-Token eingeben oder E-Mail-Link anklicken
+        -   „Dieses Gerät merken (7 Tage)?“ Checkbox
+        -   Cookie-Speicher des Browsers
+        -   session_id (normale PHP-Session)
+        -   remember_token (7-Tage-Token, Secure-Cookie)
+
+    -   Server (PHP) – in etwa so aufgeteilt:
+        -   Controller / Skripte
+        -   login_name.php → Name eingeben, Einmal-Token per Mail anstoßen
+        -   login_verify.php → Einmal-Token prüfen, Sitzung starten, „Dieses Gerät merken?“-Frage
+        -   login_remember_choice.php → Entscheidung auswerten, Remember-Cookie setzen
+        -   logout.php → Session + Remember-Token ungültig machen
+        -   Alle geschützten Inhalte, z. B. dashboard.php
+    
+    -   Middleware / Helper
+        -   auth_middleware.php → prüft bei jedem Request:
+            -   ist eine gültige Session da?
+            -   falls nicht: existiert remember_token-Cookie und ist er gültig? → Session automatisch wiederherstellen
+
+    -   Services / Klassen (logische Ebenen)
+        -   UserRepository → User per Vorname/Nachname finden, E-Mail holen
+        -   OneTimeTokenService → Einmal-Token erzeugen, speichern, prüfen, verbrauchen
+        -   RememberTokenService → 7-Tage-Token erzeugen, speichern, prüfen, widerrufen
+        -   EmailService → E-Mail mit Einmal-Link / Einmal-Code versenden
+        -   AuthService → kümmert sich um Login/Logout/Sessionerstellung
+        -   Datenbank (z. B. MySQL)
+
+2. Datenmodell (Tabellen & wichtige Felder)
+    -   users
+    -   id
+    -   firstname
+    -   lastname
+    -   email
+    -   ggf. weitere Felder (Rolle, aktiv, …)
+    -   login_one_time_tokens
+    -   id
+    -   user_id
+    -   token_hash (gehashter Einmal-Token)
+    -   created_at
+    -   expires_at (z. B. +15 Minuten)
+    -   used_at (NULL, bis er verwendet wurde)
+    -   request_ip
+    -   request_user_agent
+    -   login_remember_tokens
+    -   id
+    -   user_id
+    -   token_hash (gehashter 7-Tage-Token)
+    -   device_label (z. B. „Laptop Büro“, optional)
+    -   user_agent_snapshot (Browser/OS bei Erstellung)
+    -   ip_region (z. B. erstes /16 Netz oder Geo-Info, optional)
+    -   created_at
+    -   expires_at (z. B. +7 Tage)
+    -   last_used_at
+    -   revoked (bool)
+
+    Wichtig: Im Cookie selbst liegt nur der Roh-Token (z. B. random(32)).
+    In der Datenbank liegt nur ein Hash davon.
+
+3. Ablauf A: Erstbesuch / Login über Einmal-Token
+
+    -   1. Benutzer besucht Login-Seite (login_name.php)
+        -   Formular: Vorname, Nachname
+        -   POST an login_name.php (oder login_start.php)
+
+    -   2. Server: Namen prüfen & Einmal-Token erzeugen
+        -   UserRepository sucht User mit genau diesem Vor- & Nachnamen.
+        -   Wenn es ihn gibt:
+            -   OneTimeTokenService erzeugt Einmal-Token:
+            -   zufälliger String
+            -   in DB als Hash speichern (login_one_time_tokens)
+            -   Ablaufzeit setzen (z. B. 15 Min)
+            -   EmailService sendet E-Mail:
+                -   entweder mit Link: https://dashboard.de/login_verify.php?token=XYZ
+                -   oder mit Token, den der User manuell eintippt.
+                Seite zeigt: „Wir haben dir einen Einmal-Code per E-Mail geschickt.“
+
+    -   3. Benutzer klickt Link oder gibt Token ein (login_verify.php)
+        -   Server prüft via OneTimeTokenService:
+            -   existiert token_hash?
+            -   noch nicht benutzt? ( used_at IS NULL )
+            -   nicht abgelaufen? ( expires_at > NOW() )
+            -   Wenn ok:
+                -   AuthService erstellt eine normale PHP-Session (angemeldet).
+                -   OneTimeTokenService setzt used_at = NOW() (Token verbraucht).
+            -   Benutzer wird auf Seite geführt:
+            -   → „Dieses Gerät für 7 Tage merken? (Checkbox)“
+
+4. Ablauf B: Gerät merken (7-Tage-Token + Secure-Cookie)
+    -   4. Benutzer sagt „Ja, dieses Gerät merken“ (login_remember_choice.php)
+    -   RememberTokenService erzeugt:
+        -   zufälliger 7-Tage-Token
+        -   speichert Hash in login_remember_tokens
+        -   user_id
+        -   token_hash
+        -   user_agent_snapshot (aktueller User-Agent)
+        -   ip_region (optional; z. B. erstes Oktett oder Geo-Info)
+        -   expires_at = +7 Tage
+        -   Server setzt im Response-Header einen Cookie remember_token:
+            -   Wert: Roh-Token (nicht gehasht)
+            -   Attribute:
+                -   Secure
+                -   HttpOnly
+                -   SameSite=Strict (oder Lax, je nach Bedarf)
+                -   Max-Age / Expires = 7 Tage
+            Ab jetzt ist der Benutzer normal eingeloggt (Session), und der Browser hat zusätzlich den Remember-Cookie.
+
+5. Ablauf C: Folge-Besuch mit Remember-Cookie
+    -   Jede geschützte Seite (z. B. dashboard.php) beginnt mit auth_middleware.php:
+    -   Session prüfen:
+        -   Wenn Session gültig → Zugriff erlaubt, fertig.
+        -   Falls keine gültige Session: Remember-Cookie prüfen
+        -   Cookie remember_token vorhanden?
+            -   Wenn nein → auf Login-Seite (login_name.php) weiterleiten.
+            -   Wenn ja:
+                -   Token-Hash berechnen.
+                -   RememberTokenService prüft in login_remember_tokens:
+                    -   existiert dieser Hash?
+                    -   gehört er zu einem User?
+                    -   revoked = false?
+                    -   expires_at > NOW()?
+                    -   Geräte-/Sicherheits-Checks
+                    -   aktuellen User-Agent mit user_agent_snapshot vergleichen:
+                        -   kleine Unterschiede ok (Browser-Update), komplett anderer UA → verdächtig.
+                    -   IP-Vergleich / Region:
+                        -   stark abweichende Region → verdächtig.
+        -   Entscheidung
+            Wenn alles ok:
+            -   AuthService erzeugt neue Session für diesen User.
+            -   RememberTokenService aktualisiert last_used_at.
+            -   Optional: Sliding-Refresh → expires_at um 7 Tage ab jetzt verlängern.
+            
+            Wenn etwas verdächtig:
+            -   Keine automatische Anmeldung.
+            -   Benutzer auf login_name.php schicken:
+                -   "Wir haben ein neues oder ungewöhnliches Gerät erkannt. Bitte bestätige dich erneut mit einem Einmal-Code per E-Mail.“
+                -   Optional: Token widerrufen (revoked = true) oder nur nach E-Mail-Bestätigung erneuern.
+
+6. Ablauf D: Logout
+    -   Bei logout.php:
+    -   Session zerstören (session_destroy()).
+    -   RememberTokenService:
+        -   aktiven Token (aus Cookie) in der DB als revoked = true markieren.
+        -   Browser-Cookie remember_token löschen (mit Ablaufdatum in der Vergangenheit).
+        -   Damit ist dieses Gerät/Token abgemeldet.
+
+7. Sicherheits-Aspekte im Überblick
+
+    -   Tokens
+    -   nur serverseitig gehashte Tokens in der DB
+    -   ausreichend lang (z. B. 32 Bytes random → 64 hex-Zeichen)
+    -   Cookies:
+        -   Secure, HttpOnly, SameSite
+    -   Einmal-Tokens
+        -   kurze Gültigkeit (z. B. 10–15 Minuten)
+        -   werden nach Nutzung als „used“ markiert
+    -   Missbrauchs-Schutz
+        -   Rate-Limiting beim Anfordern von Einmal-Token (z. B. max. X Mails/Stunde)
+        -   Logging von Login-Versuchen
+        -   Verdächtige Remember-Token-Nutzung → zurück auf E-Mail-Bestätigung
