@@ -77,3 +77,4 @@ access_log
 *.lock
 *.log
 *.cache
+.vscode/csak-timelog.json

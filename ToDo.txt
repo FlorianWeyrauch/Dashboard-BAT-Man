@@ -1,5 +1,4 @@
 1. Bausteine / Komponenten
-
     -   Client (Browser, PC & Handy)
 
     -   HTML-Formulare:
