@@ -1,0 +1,79 @@
+# .gitignore für BATManDash
+# Enthält übliche Ignorier-Regeln für Windows, XAMPP, PHP, Composer, Node und IDEs
+
+# Betriebssystem
+Thumbs.db
+.DS_Store
+Desktop.ini
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+
+# Temp / Editor Swap
+*.swp
+*~
+*.tmp
+*.temp
+
+# Logs and databases
+*.log
+/logs/
+*.sql
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.*
+.env.local
+
+# Composer
+/vendor/
+/composer.lock
+
+# PHPStorm / JetBrains
+/.idea/
+*.iml
+
+# VS Code
+/.vscode/
+
+# Node
+/node_modules/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/dist/
+/build/
+
+# Coverage and test artifacts
+/coverage/
+/.nyc_output/
+/phpunit.xml.cache
+
+# XAMPP / Apache / temporary files
+/tmp/
+/*.pid
+*/tmp/*
+/htdocs/*/uploads/
+/apache-tmp/
+error_log
+access_log
+
+# Build / binary artifacts (falls vorhanden)
+/bin/
+/obj/
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+
+# Certificates and keys
+*.pem
+*.key
+
+# Misc
+*.lock
+*.log
+*.cache
