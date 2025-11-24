@@ -38,108 +38,15 @@
 
         <!-- Kursübersicht -->
         <div id="course_overview">
-
-            <div onclick="" class="course-card d-flex-c">
-                <h3 class="course-card-title">IT2024/07</h3>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
-            <div onclick="" class="course-card d-flex-c">
-                <h2 class="course-card-title">IT2024/07</h2>
-                <p>Max Mustermann / Klausi Mausi</p>
-            </div>
-
+            <!-- Dynamisch generierte Kurskarten werden hier eingefügt -->
         </div>
     </main>
 
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>
+    <script src="./js/template.js"></script>
+    <script src="./js/main.js"></script>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

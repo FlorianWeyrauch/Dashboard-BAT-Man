@@ -42,7 +42,7 @@ main {
     justify-content: center;
     flex-wrap: wrap;
     gap: 32px;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     scrollbar-color: var(--bfw-red) var(--background-color-lightgray);
 }
 
@@ -71,7 +71,7 @@ main {
 }
 
 .course-card {
-    width: 300px;
+    width: 320px;
     height: 120px;
     flex-direction: column;
     border: 2px solid var(--bfw-red);
