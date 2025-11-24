@@ -23,7 +23,37 @@
     <main>
         <div class="main-container">
             <h1 class="text-center"> Dashboard - BAT Man</h1>
+            <div class="login-box text-center">
+                <div class="login-title">
+                    <h2>Login</h2>
+                </div>
+                <div class="mb-3">
+                    <label for="vorname" class="form-label">Vorname:</label>
+                    <input type="text" id="vorname" name="vorname" class="form-control">                    
+                </div>
+                <div class="mb-3">
+                    <label for="nachname" class="form-label">Nachname:</label>
+                    <input type="text" id="nachname" name="nachname" class="form-control">
+                </div>
+                <button type="button" id="GetToken" class="btn btn-primary show">Get Token</button>
+                <div class="hidden">
+                    <div class="d-flex align-items-center justify-content-center mt-3" id="loading">
+                        <strong role="status">Loading...</strong>
+                        <div class="spinner-border ms-auto" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <footer>
+        <div class="footer-container container-fluid">
+            <div class="text-center">
+                <p>© 2025 BAT Man - Projekt - Berufsförderungswerk Nürnberg GmbH</p>
+            </div>
+        </div>
+    </footer>
+    <script src="./node_modules\bootstrap\dist\js\bootstrap.bundle.min.js"></script>
+    <script src="./js/main.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
