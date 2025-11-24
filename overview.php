@@ -8,31 +8,10 @@
 
 
     <!-- CSS-Dateien -->
-    <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/standard.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        header, footer {
-            height: 100px;
-            padding: 0 50px;
-        }
-
-        header {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        main {
-            height: calc(100vh - 200px);
-            background-color: var(--background-color-gray);
-            padding: 50px 100px;
-        }
-
         .bfw-icon {
             height: 80px;
             width: auto;
@@ -41,22 +20,6 @@
         .settings-icon {
             height: 50px;
             width: auto;
-        }
-
-        .d-flex-sb-c {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .d-flex-c {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .c-pointer {
-            cursor: pointer;
         }
 
         .course-selection {
@@ -78,19 +41,6 @@
 
         .course-selection select:hover {
             border-color: var(--bfw-red);
-        }
-
-        .course-selection button {
-            padding: 12px 24px;
-            font-size: var(--font-size-base);
-            border: 2px solid var(--bfw-red);
-            border-radius: 8px;
-            background-color: var(--background-color-white);
-            color: var(--bfw-red);
-            
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
         }
 
         .course-selection button:hover {

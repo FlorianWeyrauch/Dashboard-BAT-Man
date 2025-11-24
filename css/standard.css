@@ -1,0 +1,33 @@
+.d-flex-sb-c {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.d-flex-c {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.c-pointer {
+    cursor: pointer;
+}
+
+button {
+    padding : 10px 20px !important;
+    font-size: var(--font-size-base) !important;
+    border: 1px solid black !important;
+    border-radius: 16px !important;
+    background-color: var(--bfw-red) !important;
+    color: var(--text-color-white) !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+button:hover {
+    opacity: 0.8;
+    transform: scale(1.03);
+    box-shadow: 0 0 0 4px rgba(226, 0, 26, 0.3);
+}
