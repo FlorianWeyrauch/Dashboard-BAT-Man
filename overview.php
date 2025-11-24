@@ -12,15 +12,7 @@
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/standard.css">
     <style>
-        .bfw-icon {
-            height: 80px;
-            width: auto;
-        }
 
-        .settings-icon {
-            height: 50px;
-            width: auto;
-        }
 
         .course-selection {
             gap: 24px;
@@ -36,21 +28,6 @@
             min-width: 200px;
             font-family: Arial, sans-serif;
             transition: all 0.3s ease;
-        }
-
-
-        .course-selection select:hover {
-            border-color: var(--bfw-red);
-        }
-
-        .course-selection button:hover {
-            background-color: var(--bfw-red);
-            color: var(--text-color-white);
-            box-shadow: 0 4px 12px rgba(226, 0, 26, 0.3);
-        }
-
-        .course-selection button:active {
-            transform: translateY(0);
         }
 
         footer {
