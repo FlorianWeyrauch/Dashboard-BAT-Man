@@ -9,20 +9,20 @@
     <title>Document</title>
     <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css">
     <link rel="stylesheet" href="./css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
     <link rel="icon" href="./assets/icon/bfw-icon.svg" type="image/x-icon">
 </head>
 <body>
-    <header>
-        <div class="header-container container-fluid">
-            <nav class="header align-middle">
-                <img src="./assets/icon/bfw-icon.svg" alt="BFW Icon" class="navbar-brand-icon">
-                <a class="navbar-brand align-middle" href=""><b>bfw</b>nürnberg</a>
-            </nav>
-        </div>
+    <header class="d-flex-sb-c">
+        <a href="">
+            <img class="bfw-icon" src="./assets/icon/bfw-icon.svg" alt="BFW">
+        </a>
+        <a href=""><h1><b>bfw</b>nürnberg</h1></a>
+        <div></div>
     </header>
     <main>
         <div class="main-container">
-            <h1 class="text-center"> Dashboard - BAT Man</h1>
+            <h1 class="text-center"> Dashboard - BAT Man <b>Login</b></h1>
             <div class="login-box text-center">
                 <div class="login-title">
                     <h2>Login</h2>
