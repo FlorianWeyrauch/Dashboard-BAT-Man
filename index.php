@@ -6,10 +6,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BAT Man Dashbord</title>
     <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css">
     <link rel="stylesheet" href="./css/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/login.css?v=<?php echo time(); ?>">
     <link rel="icon" href="./assets/icon/bfw-icon.svg" type="image/x-icon">
 </head>
 <body>
@@ -42,6 +43,7 @@
                         <div class="spinner-border ms-auto" aria-hidden="true"></div>
                     </div>
                 </div>
+                <div class="mt-3" id="tokenResult"></div>
             </div>
         </div>
     </main>
@@ -54,7 +56,8 @@
         </div>
     </footer>
     <script src="./node_modules\bootstrap\dist\js\bootstrap.bundle.min.js"></script>
-    <script src="./js/main.js?v=<?php echo time(); ?>"></script>
     <script src="./js/jQueryv3.7.1?v=<?php echo time(); ?>"></script>
+    <script src="./js/main.js?v=<?php echo time(); ?>"></script>
+    <script src="./js/login.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
