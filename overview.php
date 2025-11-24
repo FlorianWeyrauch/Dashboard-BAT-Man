@@ -13,6 +13,13 @@
     <link rel="stylesheet" href="./css/standard.css">
     <style>
 
+        .settings-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .settings-icon:hover {
+            transform: rotate(45deg);
+        }
 
         .course-selection {
             gap: 24px;
@@ -29,14 +36,6 @@
             font-family: Arial, sans-serif;
             transition: all 0.3s ease;
         }
-
-        footer {
-            background-color: var(--background-color-white);
-            color: var(--text-color-gray);
-            border-top: 1px solid var(--background-color-gray);
-            font-size: 14px;
-        }
-
     </style>
 </head>
 <body>
