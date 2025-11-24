@@ -45,7 +45,7 @@
         <a href="./overview.php">
             <img class="bfw-icon" src="./assets/icon/bfw-icon.svg" alt="BFW">
         </a>
-        <h1>Willkommen</h1>
+        <h1>Dashboard</h1>
         <img class="settings-icon c-pointer" src="./assets/icon/settings-icon.svg" alt="Einstellungen">
     </header>
 
@@ -61,6 +61,9 @@
             </select>
             <button class="">Zurücksetzen</button>
         </div>
+
+        <!-- Kursübersicht -->
+        <div></div>
     </main>
 
     <footer class="d-flex-c">
