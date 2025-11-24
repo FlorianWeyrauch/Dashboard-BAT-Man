@@ -14,14 +14,15 @@
 </head>
 <body>
     <header class="d-flex-sb-c">
-        <a href="./overview.php">
+        <a href="">
             <img class="bfw-icon" src="./assets/icon/bfw-icon.svg" alt="BFW">
         </a>
-        <h1>Willkommen</h1>
+        <a href=""><h1><b>bfw</b>nürnberg</h1></a>
+        <div></div>
     </header>
     <main>
         <div class="main-container">
-            <h1 class="text-center"> Dashboard - BAT Man</h1>
+            <h1 class="text-center"> Dashboard - BAT Man <b>Login</b></h1>
             <div class="login-box text-center">
                 <div class="login-title">
                     <h2>Login</h2>
