@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,30 +9,136 @@
 
     <!-- CSS-Dateien -->
     <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css">
     <style>
         body {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         header, footer {
-            height: 50px;
-            background-color: red;
+            height: 100px;
+            padding: 0 50px;
+        }
+
+        header {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         main {
-
+            height: calc(100vh - 200px);
+            background-color: var(--background-color-gray);
+            padding: 50px 100px;
         }
+
+        .bfw-icon {
+            height: 80px;
+            width: auto;
+        }
+
+        .settings-icon {
+            height: 50px;
+            width: auto;
+        }
+
+        .d-flex-sb-c {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .d-flex-c {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .c-pointer {
+            cursor: pointer;
+        }
+
+        .course-selection {
+            gap: 24px;
+        }
+
+        .course-selection select {
+            padding: 12px 16px;
+            font-size: var(--font-size-base);
+            border: 2px solid var(--background-color-gray);
+            border-radius: 8px;
+            background-color: var(--background-color-white);
+            color: var(--text-color-black);
+            min-width: 200px;
+            font-family: Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+
+        .course-selection select:hover {
+            border-color: var(--bfw-red);
+        }
+
+        .course-selection button {
+            padding: 12px 24px;
+            font-size: var(--font-size-base);
+            border: 2px solid var(--bfw-red);
+            border-radius: 8px;
+            background-color: var(--background-color-white);
+            color: var(--bfw-red);
+            
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .course-selection button:hover {
+            background-color: var(--bfw-red);
+            color: var(--text-color-white);
+            box-shadow: 0 4px 12px rgba(226, 0, 26, 0.3);
+        }
+
+        .course-selection button:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            background-color: var(--background-color-white);
+            color: var(--text-color-gray);
+            border-top: 1px solid var(--background-color-gray);
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
-    <header>
-        
+
+    <header class="d-flex-sb-c">
+        <a href="./overview.php">
+            <img class="bfw-icon" src="./assets/icon/bfw-icon.svg" alt="BFW">
+        </a>
+        <h1>Willkommen</h1>
+        <img class="settings-icon c-pointer" src="./assets/icon/settings-icon.svg" alt="Einstellungen">
     </header>
-    <main></main>
-    <footer></footer>
-    
+
+
+    <main>
+        <!-- js dynamische ausgabe -->
+        <div class="course-selection d-flex-c">
+            <select name="courses" id="courses">
+                <option value="" disabled selected hidden>Kursjahr auswählen</option>
+                <option value="kurs1">2025</option>
+                <option value="kurs2">2024</option>
+                <option value="kurs3">2023</option>
+            </select>
+            <button class="">Zurücksetzen</button>
+        </div>
+    </main>
+
+    <footer class="d-flex-c">
+        <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
+    </footer>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
