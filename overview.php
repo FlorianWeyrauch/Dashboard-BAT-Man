@@ -10,9 +10,27 @@
     <!-- CSS-Dateien -->
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header, footer {
+            height: 50px;
+            background-color: red;
+        }
+
+        main {
+
+        }
+    </style>
 </head>
 <body>
-    <header></header>
+    <header>
+        
+    </header>
     <main></main>
     <footer></footer>
     
