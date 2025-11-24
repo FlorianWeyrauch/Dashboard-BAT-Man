@@ -13,16 +13,17 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg header ">
-            <img src="./assets/icon/bfw-icon.svg" alt="BFW Icon" class="navbar-brand-icon">
-            <a class="navbar-brand bold" href="">Dashboard - BAT Man</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </nav>
+        <div class="header-container container-fluid">
+            <nav class="header align-middle">
+                <img src="./assets/icon/bfw-icon.svg" alt="BFW Icon" class="navbar-brand-icon">
+                <a class="navbar-brand align-middle" href=""><b>bfw</b>nürnberg</a>
+            </nav>
+        </div>
     </header>
-    <div class="container">
-        <h1 class="text-center">Dashboard</h1>
-    </div>
+    <main>
+        <div class="main-container">
+            <h1 class="text-center"> Dashboard - BAT Man</h1>
+        </div>
+    </main>
 </body>
 </html>

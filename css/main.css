@@ -5,7 +5,7 @@
     --text-color-white: #ffffff;
     --text-color-black: #000000;
     --text-color-gray: #585858;
-    --header-height: 70px;
+    --header-height: 100px;
     --font-size-base: 16px;
 }
 body {
@@ -23,10 +23,32 @@ header {
     align-items: center;
     padding: 0 20px;
     border-bottom: 1px solid var(--background-color-gray);
-    font-size: 3.5rem !important;
+    font-size: 2.2rem !important;
+}
+.header-container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .navbar-brand-icon {
     width: 50px;
     height: 50px;
     margin: 10px;
+}
+
+main {
+    padding: 20px;
+    background-color: var(--background-color-white);
+    color: var(--text-color-gray);
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        font-size: 1.5rem !important;
+        justify-content: center;
+    }
+    
 }
