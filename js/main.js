@@ -3,23 +3,17 @@ function init(){
     loadCourses();
 }
 
+// alle vorhanden Jahre aus json abspeichern
 let courseYear = [];
-
-//Test Data
-const courses = [
-    {"courseName": "IT2023/01", "firstLeader": "Max Mustermann", "secondLeader": "Erika Musterfrau"},
-    {"courseName": "IT2023/07", "firstLeader": "Erika Musterfrau", "secondLeader": "Max Mustermann"},
-    {"courseName": "IT2024/01", "firstLeader": "Hans Müller", "secondLeader": "Anna Schmidt"},
-    {"courseName": "IT2024/07", "firstLeader": "Peter Fischer", "secondLeader": "Laura Weber"},
-    {"courseName": "IT2025/01", "firstLeader": "Sophie Wagner", "secondLeader": "Lukas Becker"},
-    {"courseName": "IT2025/07", "firstLeader": "Julia Hoffmann", "secondLeader": "Tim Schäfer"},
-];
 
 const loginInData = [
     {"lastName": "Lange", "gender": "m"},
     {"lastName": "Fichtner", "gender": "m"},
     {"lastName": "Laufer", "gender": "m"}
 ];
+
+
+//Nachname aus dem Login holen -> Sven
 
 function welcomeMessage(){
     let container = document.getElementById('welcome_message');
@@ -32,23 +26,39 @@ function welcomeMessage(){
     }
 }
 
+//Wichtig!!!
+// Schleife anpassen je nachdem wie die kurse in das json geladen werden
 function loadCourses(){    
     let courseOverview = document.getElementById('course_overview');
-    let coursesContainer = document.getElementById('courses');
     courseOverview.innerHTML = '';
     
-    for(let i = 0; i < courses.length; i++){
+    for(let i = courses.length - 1; i >= 0; i--){
         let year = courses[i].courseName.split('/')[0].substring(2);
+        console.log(year);
         if(!courseYear.includes(year)){
             courseYear.push(year);
         }
         courseOverview.innerHTML += getCourse(courses[i], i);
     }
-    coursesContainer.value = "";
+    loadCourseYear();
 };
 
+function loadCourseYear(){
+    let coursesContainer = document.getElementById('courses_selection');
+    courseYear.sort().reverse();
+    coursesContainer.innerHTML = "";
+    coursesContainer.innerHTML = getYearOptionPlaceholder();
+    courseYear.forEach((element) =>{
+        coursesContainer.innerHTML += getYearOption(element);
+    });
+    coursesContainer.value = "";
+}
+
+
+//Filter Funktion für die Kursübersicht
+// Eingabe = IT2024/07 vergleichen mit arr
 function filterCourses(){
-    let coursesContainer = document.getElementById('courses');
+    let coursesContainer = document.getElementById('courses_selection');
     let courseOverview = document.getElementById('course_overview');
     let selectedYear = coursesContainer.value;
     if(selectedYear == ""){
@@ -64,7 +74,8 @@ function filterCourses(){
     }
 }
 
-
+// abspeichern im Session Storage
+// weiterleiten auf den angeklickten Kurs
 function showCurrentCourse(index){
     let selectedCourse = courses[index];
     saveToSessionStorage('selectedCourse', selectedCourse);

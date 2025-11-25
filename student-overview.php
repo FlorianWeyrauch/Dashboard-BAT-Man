@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
     
     <!-- JavaScript-Dateien -->
+     <script defer src="./js/test-daten.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
