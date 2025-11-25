@@ -1,5 +1,8 @@
 :root {
     --bfw-red: #e2001a;
+    --traffic-light-green: #00e600;
+    --traffic-light-yellow: #ffe500;
+    --traffic-light-red: #ff0000;
     --background-color-white: #ffffff;
     --background-color-gray: #585858;
     --background-color-lightgray: lightgray;

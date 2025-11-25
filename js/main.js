@@ -6,6 +6,7 @@ function init(){
 // alle vorhanden Jahre aus json abspeichern
 let courseYear = [];
 
+//testdaten login
 const loginInData = [
     {"lastName": "Lange", "gender": "m"},
     {"lastName": "Fichtner", "gender": "m"},
@@ -13,8 +14,7 @@ const loginInData = [
 ];
 
 
-//Nachname aus dem Login holen -> Sven
-
+//Nachname aus dem Login holen und als begrüßung anzeigen lassen -> Sven
 function welcomeMessage(){
     let container = document.getElementById('welcome_message');
     if(loginInData[0].gender === "m"){
@@ -43,6 +43,7 @@ function loadCourses(){
     loadCourseYear();
 };
 
+//läd alle vorhanden Kursjahre in das dropdown rein
 function loadCourseYear(){
     let coursesContainer = document.getElementById('courses_selection');
     courseYear.sort().reverse();
@@ -74,6 +75,7 @@ function filterCourses(){
     }
 }
 
+// übergabe des indexes des angeklickten Kurses
 // abspeichern im Session Storage
 // weiterleiten auf den angeklickten Kurs
 function showCurrentCourse(index){

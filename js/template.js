@@ -20,6 +20,7 @@ function getYearOption(year){
     `;
 }
 
+//Dropdown Placeholder für Kursjahr auswählen
 function getYearOptionPlaceholder(){
     return `
     <option value="" disabled selected hidden>Kursjahr auswählen</option>
