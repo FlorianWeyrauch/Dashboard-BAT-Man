@@ -7,12 +7,17 @@
     <link rel="icon" href="./assets/icon/bfw-icon.svg" type="image/x-icon">
 
     <!-- CSS-Dateien -->
-    <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css">
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/overview.css">
-    <link rel="stylesheet" href="./css/standard.css">
+    <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css?">
+    <link rel="stylesheet" href="./css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/overview.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
+    
+    <!-- JavaScript-Dateien -->
+    <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </head>
-<body>
+<body onload="init()">
 
     <header class="d-flex-sb-c">
         <a href="./overview.php">
@@ -24,16 +29,16 @@
 
 
     <main>
-        <h2 class="main-headline">Willkommen Herr Lange</h2>
+        <h2 id="welcome_message" class="main-headline"></h2>
         <!-- js dynamische ausgabe -->
         <div class="course-selection d-flex-c">
-            <select name="courses" id="courses">
+            <select oninput="filterCourses()" name="courses" id="courses">
                 <option value="" disabled selected hidden>Kursjahr auswählen</option>
-                <option value="kurs1">2025</option>
-                <option value="kurs2">2024</option>
-                <option value="kurs3">2023</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
             </select>
-            <button class="">Zurücksetzen</button>
+            <button onclick="loadCourses()" class="">Zurücksetzen</button>
         </div>
 
         <!-- Kursübersicht -->
@@ -45,8 +50,5 @@
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>
-    <script src="./js/template.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
