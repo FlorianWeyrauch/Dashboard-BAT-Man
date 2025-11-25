@@ -18,7 +18,7 @@
     <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
     <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </head>
-<body onload="init()">
+<body onload="loadStudentOverview()">
 
     <header class="d-flex-sb-c">
         <a href="./overview.php">
@@ -29,23 +29,8 @@
     </header>
 
 
-    <main>
-        <h2 id="welcome_message" class="main-headline"></h2>
-        <!-- js dynamische ausgabe -->
-        <div class="course-selection d-flex-c">
-            <select oninput="filterCourses()" name="courses" id="courses">
-                <option value="" disabled selected hidden>Kursjahr auswählen</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-            </select>
-            <button onclick="loadCourses()" class="">Zurücksetzen</button>
-        </div>
+    <main id="student_overview">
 
-        <!-- Kursübersicht -->
-        <div id="course_overview">
-            <!-- Dynamisch generierte Kurskarten werden hier eingefügt -->
-        </div>
     </main>
 
     <footer>

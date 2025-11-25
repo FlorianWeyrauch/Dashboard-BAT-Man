@@ -71,7 +71,7 @@ main {
 }
 
 .course-card {
-    width: 320px;
+    width: 310px;
     height: 120px;
     flex-direction: column;
     border: 2px solid var(--bfw-red);

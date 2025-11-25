@@ -42,7 +42,7 @@ function loadCourses(){
         if(!courseYear.includes(year)){
             courseYear.push(year);
         }
-        courseOverview.innerHTML += getCourse(courses[i]);
+        courseOverview.innerHTML += getCourse(courses[i], i);
     }
     coursesContainer.value = "";
 };
@@ -59,9 +59,36 @@ function filterCourses(){
     for(let i = 0; i < courses.length; i++){
         let year = courses[i].courseName.split('/')[0].substring(2);
         if(year == selectedYear){
-            courseOverview.innerHTML += getCourse(courses[i]);
-        }
+            courseOverview.innerHTML += getCourse(courses[i], i);
+        };
     }
-
 }
+
+
+function showCurrentCourse(index){
+    let selectedCourse = courses[index];
+    saveToSessionStorage('selectedCourse', selectedCourse);
+    window.location.href = "./student-overview.php";
+}
+
+// Funktion für student-overview.php
+function loadStudentOverview(){
+    let selectedCourse = getFromSessionStorage('selectedCourse');
+    let container = document.getElementById('student_overview');
+    
+    if(!container) return; 
+    
+    if(selectedCourse) {
+        container.innerHTML = `
+            <div style="padding: 20px;">
+                <h2>${selectedCourse.courseName}</h2>
+                <p>Kursleiter: ${selectedCourse.firstLeader} / ${selectedCourse.secondLeader}</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = '<p style="padding: 20px;">Kein Kurs ausgewählt</p>';
+    }
+}
+
+
 
