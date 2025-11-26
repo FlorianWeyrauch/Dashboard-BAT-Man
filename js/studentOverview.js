@@ -8,9 +8,11 @@ function loadCurrentStudents() {
         bubbleSortStudents(students);
     });
     courseHeader.innerHTML = getCourseHeader(currentCourse);
+    courseContainer.innerHTML = "";
     students.forEach(element => {
         courseContainer.innerHTML += getStudent(element);
-    });    
+    });
+    clearStudentOverview();    
 }
 
 function bubbleSortStudents(arr) {
@@ -25,4 +27,26 @@ function bubbleSortStudents(arr) {
         }
     }
     return arr;
+}
+
+function filterByProfession() {
+    let professionSelect = document.getElementById("profession_selection");
+    let selectedProfession = professionSelect.value;
+    let courseContainer = document.getElementById('course_student_display');
+    const currentCourse = getFromSessionStorage('selectedCourse');
+    courseContainer.innerHTML = '';
+    currentCourse.students.forEach(element => {
+        if (selectedProfession === "" || element.profession.toLowerCase() === selectedProfession.toLowerCase()) {
+            courseContainer.innerHTML += getStudent(element);
+        }
+    });
+}
+
+function clearStudentOverview() {
+    let name = document.getElementById("name_input");
+    let profession = document.getElementById("profession_selection");
+    let status = document.getElementById("status_selection");
+    name.value = "";
+    profession.value = "";
+    status.value = "";
 }

@@ -37,13 +37,13 @@
         </div>
 
         <div class="d-flex-c filter-bar">
-            <input placeholder="Suche nach Nachnamen..." type="text">
+            <input id="name_input" placeholder="Suche nach Nachnamen..." type="text">
 
-            <select oninput="filterCourses()" id="courses_selection">
+            <select oninput="filterByProfession()" id="profession_selection">
                 <option value="" disabled selected hidden>Beruf auswählen</option>
                 <option value="fiae">FIAE</option>
                 <option value="fisi">FISI</option>
-                <option value="itdm">ITDM</option>
+                <option value="fidm">FIDM</option>
             </select>
 
             <select oninput="filterCourses()" id="status_selection">
@@ -53,7 +53,7 @@
                 <option value="green" data-color="green">● Grün</option>
             </select>
 
-            <button onclick="">Zurücksetzen</button>
+            <button onclick="loadCurrentStudents()">Zurücksetzen</button>
         </div>
         
         <div class="wrapper d-flex-sb-fs">

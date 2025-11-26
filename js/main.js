@@ -34,7 +34,6 @@ function loadCourses(){
     
     for(let i = courses.length - 1; i >= 0; i--){
         let year = courses[i].courseName.split('/')[0].substring(2);
-        console.log(year);
         if(!courseYear.includes(year)){
             courseYear.push(year);
         }

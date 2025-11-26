@@ -46,3 +46,11 @@ function getStudent(data){
         </div>
     `;
 }
+
+function filteredElementNotFound(){
+    return `
+        <div class="student-row d-flex-c">
+            <h4>Kein Eintrag gefunden</h4>
+        </div>
+    `;
+}
