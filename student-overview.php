@@ -9,17 +9,18 @@
     <!-- CSS-Dateien -->
     <link rel="stylesheet" href="./node_modules\bootstrap\dist\css\bootstrap.min.css?">
     <link rel="stylesheet" href="./css/main.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="./css/overview.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/student-overview.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
     
     <!-- JavaScript-Dateien -->
      <script defer src="./js/test-daten.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
     <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </head>
-<body onload="loadStudentOverview()">
+
+<body onload="loadCurrentStudents()"> <!-- onload="loadStudentOverview()" -->
 
     <header class="d-flex-sb-c">
         <a href="./overview.php">
@@ -31,7 +32,41 @@
 
 
     <main id="student_overview">
+        <div class="d-flex-c-c" id="course_header">
+            <!-- Dynamische Kursanzeige + Kursleiter -->
+        </div>
 
+        <div class="d-flex-c filter-bar">
+            <input id="name_input" placeholder="Suche nach Nachnamen..." type="text">
+
+            <select oninput="filterByProfession()" id="profession_selection">
+                <option value="" disabled selected hidden>Beruf auswählen</option>
+                <option value="fiae">FIAE</option>
+                <option value="fisi">FISI</option>
+                <option value="fidm">FIDM</option>
+            </select>
+
+            <select oninput="filterCourses()" id="status_selection">
+                <option value="" disabled selected hidden>Status auswählen</option>
+                <option value="red" data-color="red">● Rot</option>
+                <option value="yellow" data-color="yellow">● Gelb</option>
+                <option value="green" data-color="green">● Grün</option>
+            </select>
+
+            <button onclick="loadCurrentStudents()">Zurücksetzen</button>
+        </div>
+        
+        <div class="wrapper d-flex-sb-fs">
+            <!-- Schueler ansicht -->
+            <div class="course-student-display" id="course_student_display">
+                <!-- Dynamisch generierte Schülerkarten werden hier eingefügt -->
+            </div>
+
+            <!-- Kreisdiagramm -->
+            <div class="course-diagram">
+                Diagramm
+            </div>
+        </div>
     </main>
 
     <footer>

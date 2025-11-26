@@ -6,6 +6,7 @@ function init(){
 // alle vorhanden Jahre aus json abspeichern
 let courseYear = [];
 
+//testdaten login
 const loginInData = [
     {"lastName": "Lange", "gender": "m"},
     {"lastName": "Fichtner", "gender": "m"},
@@ -13,8 +14,7 @@ const loginInData = [
 ];
 
 
-//Nachname aus dem Login holen -> Sven
-
+//Nachname aus dem Login holen und als begrüßung anzeigen lassen -> Sven
 function welcomeMessage(){
     let container = document.getElementById('welcome_message');
     if(loginInData[0].gender === "m"){
@@ -34,7 +34,6 @@ function loadCourses(){
     
     for(let i = courses.length - 1; i >= 0; i--){
         let year = courses[i].courseName.split('/')[0].substring(2);
-        console.log(year);
         if(!courseYear.includes(year)){
             courseYear.push(year);
         }
@@ -43,6 +42,7 @@ function loadCourses(){
     loadCourseYear();
 };
 
+//läd alle vorhanden Kursjahre in das dropdown rein
 function loadCourseYear(){
     let coursesContainer = document.getElementById('courses_selection');
     courseYear.sort().reverse();
@@ -74,6 +74,7 @@ function filterCourses(){
     }
 }
 
+// übergabe des indexes des angeklickten Kurses
 // abspeichern im Session Storage
 // weiterleiten auf den angeklickten Kurs
 function showCurrentCourse(index){
@@ -96,8 +97,18 @@ function loadStudentOverview(){
                 <p>Kursleiter: ${selectedCourse.firstLeader} / ${selectedCourse.secondLeader}</p>
             </div>
         `;
-    } else {
-        container.innerHTML = '<p style="padding: 20px;">Kein Kurs ausgewählt</p>';
+    }
+}
+
+function updateStatusColor(selectElement) {
+    selectElement.classList.remove('color-red', 'color-yellow', 'color-green');
+    let value = selectElement.value;
+    if(value === 'red') {
+        selectElement.classList.add('color-red');
+    } else if(value === 'yellow') {
+        selectElement.classList.add('color-yellow');
+    } else if(value === 'green') {
+        selectElement.classList.add('color-green');
     }
 }
 
