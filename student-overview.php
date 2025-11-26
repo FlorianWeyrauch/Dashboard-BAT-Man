@@ -16,11 +16,11 @@
      <script defer src="./js/test-daten.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
     <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </head>
 
-<body> <!-- onload="loadStudentOverview()" -->
+<body onload="loadCurrentStudents()"> <!-- onload="loadStudentOverview()" -->
 
     <header class="d-flex-sb-c">
         <a href="./overview.php">
@@ -32,34 +32,34 @@
 
 
     <main id="student_overview">
-        <div class="d-flex-c-c">
-            <h2>IT2024/24</h2>
-            <p>${firstTeacher} / ${secondTeacher}</p>
+        <div class="d-flex-c-c" id="course_header">
+            <!-- Dynamische Kursanzeige + Kursleiter -->
         </div>
 
         <div class="d-flex-c filter-bar">
-            <input placeholder="Suche nach Namen..." type="text">
-            <select oninput="filterCourses()" name="courses" id="courses_selection">
-                <option value="" disabled selected hidden>Status auswählen</option>
-                <option value="red">Rot</option>
-                <option value="yellow">Gelb</option>
-                <option value="green">Grün</option>
-            </select>
+            <input placeholder="Suche nach Nachnamen..." type="text">
 
-            <select oninput="filterCourses()" name="courses" id="courses_selection">
+            <select oninput="filterCourses()" id="courses_selection">
                 <option value="" disabled selected hidden>Beruf auswählen</option>
                 <option value="fiae">FIAE</option>
                 <option value="fisi">FISI</option>
                 <option value="itdm">ITDM</option>
             </select>
+
+            <select oninput="filterCourses()" id="status_selection">
+                <option value="" disabled selected hidden>Status auswählen</option>
+                <option value="red" data-color="red">● Rot</option>
+                <option value="yellow" data-color="yellow">● Gelb</option>
+                <option value="green" data-color="green">● Grün</option>
+            </select>
+
+            <button onclick="">Zurücksetzen</button>
         </div>
         
         <div class="wrapper d-flex-sb-fs">
             <!-- Schueler ansicht -->
-            <div class="course-student-display d-flex-sb-c">
-                <h4>Florian Weyrauch</h4>
-                <h4>FIAE</h4>
-                <div class="status-traffic-light"></div>
+            <div class="course-student-display" id="course_student_display">
+                <!-- Dynamisch generierte Schülerkarten werden hier eingefügt -->
             </div>
 
             <!-- Kreisdiagramm -->

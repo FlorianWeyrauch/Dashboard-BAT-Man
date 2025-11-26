@@ -10,7 +10,7 @@
     --text-color-black: #000000;
     --text-color-gray: #585858;
     --header-height: 100px;
-    --footer-height: 100px;
+    --footer-height: 70px;
     --font-size-base: 16px;
 }
 body {
@@ -90,7 +90,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem !important;
+    font-size: var(--font-size-base);
 }
 
 button {
@@ -125,6 +125,14 @@ button:active {
 .settings-icon {
     height: 50px;
     width: auto;
+}
+
+.settings-icon {
+    transition: transform 0.3s ease;
+}
+
+.settings-icon:hover {
+    transform: rotate(45deg);
 }
 
 @media screen and (max-width: 768px) {

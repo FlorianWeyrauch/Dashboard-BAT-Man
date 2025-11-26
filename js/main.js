@@ -98,8 +98,18 @@ function loadStudentOverview(){
                 <p>Kursleiter: ${selectedCourse.firstLeader} / ${selectedCourse.secondLeader}</p>
             </div>
         `;
-    } else {
-        container.innerHTML = '<p style="padding: 20px;">Kein Kurs ausgewählt</p>';
+    }
+}
+
+function updateStatusColor(selectElement) {
+    selectElement.classList.remove('color-red', 'color-yellow', 'color-green');
+    let value = selectElement.value;
+    if(value === 'red') {
+        selectElement.classList.add('color-red');
+    } else if(value === 'yellow') {
+        selectElement.classList.add('color-yellow');
+    } else if(value === 'green') {
+        selectElement.classList.add('color-green');
     }
 }
 
