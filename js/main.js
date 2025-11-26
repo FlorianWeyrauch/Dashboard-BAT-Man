@@ -14,6 +14,8 @@ const loginInData = [
 ];
 
 
+
+
 //Nachname aus dem Login holen und als begrüßung anzeigen lassen -> Sven
 function welcomeMessage(){
     let container = document.getElementById('welcome_message');
