@@ -1,4 +1,5 @@
 <?php
+
 class MySessionHandler {
     private $session_start;
     private $ip_address;
@@ -27,24 +28,33 @@ class MySessionHandler {
             'samesite' => 'Lax'
         ];
 
-        // Überprüfen, ob die Sitzung bereits gestartet wurde
-        $this->session_start = $this->CheckSessionStart();
+        // Session-Name und Cookie-Parameter setzen (muss VOR session_start() passieren)
+        session_name($this->session_cookie_settings['name']);
+        $this->SetCookieNew();
+        
+        // Session starten (lädt existierende oder erstellt neue)
+        session_start();
+        
+        // Prüfen, ob die Session bereits initialisiert wurde (anhand von 'created')
+        $this->session_start = isset($_SESSION['created']);
 
-        //Wenn session gestartet wurde, wird $this->session_start auf true gesetzt
+        //Wenn session bereits initialisiert wurde
         if ($this->session_start) {
             $this->do_update=true;
             if($this->check_secure){
                 // Überprüfen, ob die Sitzung sicher ist
                 if ($this->IsSecureSession()) {
+                    
                     // bestehende sichere Sitzung aktualisieren (last_activity, evtl. Rotation)
                 } else {
                     $this->do_update=false;
                     // Unsichere Sitzung erkannt - Sitzung beenden und neu starten
-                    $this->endSession();
+                    $this->SessionKill();
                     $this->StartSecureSession();
                 }
             }
             if($this->do_update){
+                
                 $this->UpdateSecureSession();
             }
         }else{
@@ -54,17 +64,7 @@ class MySessionHandler {
         }
     }
 
-    /**
-     * Prüft, ob eine Sitzung aktiv ist.
-     * Überschreibt $this->session_start.
-     * @return string
-     */
-    private function CheckSessionStart() {
-        //nur wenn session aktiv ist true zurückgeben
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            return true;
-        }
-    }
+
 
 
     /**
@@ -94,25 +94,19 @@ class MySessionHandler {
      * @return string
      */
     public function StartSecureSession(array $data = []) {
-        // optionale Anwendungsdaten speichern
+        // Session wurde bereits im Konstruktor gestartet, nur Daten setzen
+        // data in $_SESSION schreiben
         if (!empty($data)) {
             $_SESSION['data'] = $data;
         } else {
             $_SESSION['data'] = [];
         }
-        //session Daten initialisieren
+        // Standardwerte setzen
         $_SESSION['user_id'] = $data['data']['user_id'] ?? 'GUEST';
         $_SESSION['secure_session'] = $this->session_cookie_settings['secure'];
         $_SESSION['created'] = time();
         $_SESSION['last_activity'] = time();
         $_SESSION['fingerprint'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
-        //Session Name setzen
-        session_name($this->session_cookie_settings['name']);
-        //cookie parameter setzen
-        $this->SetCookieNew();
-        // Sitzung starten
-        session_start();
-
         return session_id();
     }
 
@@ -151,17 +145,18 @@ class MySessionHandler {
         }
         // Session-ID periodisch rotieren, um das Risiko zu verringern
         if (!empty($_SESSION['created']) && (time() - $_SESSION['created']) > $rotateAfterSeconds) {
+            // Session-ID rotiert 
             session_regenerate_id(true);
             $_SESSION['created'] = time();
-        }
-
+           
+        } 
         return true;
     }
 
     /**
      * Sitzung sicher beenden.
      */
-    public function Session_Kill(){
+    public function SessionKill(){
         if (session_status() === PHP_SESSION_ACTIVE) {
             // Alle Session-Variablen zurücksetzen
             $_SESSION = [];

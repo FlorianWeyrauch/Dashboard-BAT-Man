@@ -3,6 +3,7 @@
     require_once 'classes/main_class.php';
     $main = new Main();
     print_r($_SESSION);
+ 
     //echo($_GET['test']." ".$_GET['test2']);
 ?>
 <!DOCTYPE html>
