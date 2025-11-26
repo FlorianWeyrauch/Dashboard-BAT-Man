@@ -1,7 +1,10 @@
-function init(){
+async function init(){
     welcomeMessage();
+    await loadCoursesFromDB();
     loadCourses();
 }
+
+let courses;
 
 // alle vorhanden Jahre aus json abspeichern
 let courseYear = [];
@@ -12,9 +15,6 @@ const loginInData = [
     {"lastName": "Fichtner", "gender": "m"},
     {"lastName": "Laufer", "gender": "m"}
 ];
-
-
-
 
 //Nachname aus dem Login holen und als begrüßung anzeigen lassen -> Sven
 function welcomeMessage(){
@@ -31,6 +31,7 @@ function welcomeMessage(){
 //Wichtig!!!
 // Schleife anpassen je nachdem wie die kurse in das json geladen werden
 function loadCourses(){    
+    courses = getFromSessionStorage('courses');
     let courseOverview = document.getElementById('course_overview');
     courseOverview.innerHTML = '';
     
@@ -83,35 +84,6 @@ function showCurrentCourse(index){
     let selectedCourse = courses[index];
     saveToSessionStorage('selectedCourse', selectedCourse);
     window.location.href = "./student-overview.php";
-}
-
-// Funktion für student-overview.php
-function loadStudentOverview(){
-    let selectedCourse = getFromSessionStorage('selectedCourse');
-    let container = document.getElementById('student_overview');
-    
-    if(!container) return; 
-    
-    if(selectedCourse) {
-        container.innerHTML = `
-            <div style="padding: 20px;">
-                <h2>${selectedCourse.courseName}</h2>
-                <p>Kursleiter: ${selectedCourse.firstLeader} / ${selectedCourse.secondLeader}</p>
-            </div>
-        `;
-    }
-}
-
-function updateStatusColor(selectElement) {
-    selectElement.classList.remove('color-red', 'color-yellow', 'color-green');
-    let value = selectElement.value;
-    if(value === 'red') {
-        selectElement.classList.add('color-red');
-    } else if(value === 'yellow') {
-        selectElement.classList.add('color-yellow');
-    } else if(value === 'green') {
-        selectElement.classList.add('color-green');
-    }
 }
 
 

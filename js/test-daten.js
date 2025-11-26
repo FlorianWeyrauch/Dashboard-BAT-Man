@@ -1,4 +1,4 @@
-let courses = [
+let coursesTest = [
     {
         "courseName": "IT2020/01",
         "firstLeader": {"firstName": "Thomas", "lastName": "Bauer", "gender": "m"},
@@ -324,3 +324,5 @@ let courses = [
         ]
     }
 ];
+
+saveToSessionStorage('courses', coursesTest);

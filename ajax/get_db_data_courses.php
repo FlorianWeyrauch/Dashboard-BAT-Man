@@ -1,12 +1,13 @@
 <?php
     //get database data for dashboard
     header('Content-Type => application/json; charset=utf-8');
-    $production_mode = $_GET['prod'] ?? false;
+    $production_mode = filter_var($_POST['prod'], FILTER_VALIDATE_BOOLEAN);
     
-    if($production_mode){
+    if($production_mode === true){
         //get Db_Data
-        echo "DBANFRAGE";
-    }else{
+        $courses = ["DB connection"]; // Hier sollte die tatsächliche Datenbankabfrage stehen
+        echo json_encode($courses, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    } else {
     $courses = [
         [
         "courseName" => "IT2020/01",
@@ -333,7 +334,7 @@
         ]
     ]
 ];
-echo json_encode($courses);
+echo json_encode($courses, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 }
     
 ?>

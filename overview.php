@@ -11,13 +11,7 @@
     <link rel="stylesheet" href="./css/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/overview.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
-    
-    <!-- JavaScript-Dateien -->
-    <script defer src="./js/test-daten.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
+
 </head>
 <body onload="init()">
 
@@ -49,5 +43,12 @@
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>
+        <!-- JavaScript-Dateien -->
+    <script src="./js/jQueryv3.7.1?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/get_db.js?v=<?php echo time(); ?>"></script>
+     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/main.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </body>
 </html>
