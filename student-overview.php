@@ -12,12 +12,6 @@
     <link rel="stylesheet" href="./css/student-overview.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
     
-    <!-- JavaScript-Dateien -->
-     <script defer src="./js/test-daten.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
-    <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </head>
 
 <body onload="loadCurrentStudents()"> <!-- onload="loadStudentOverview()" -->
@@ -37,20 +31,20 @@
         </div>
 
         <div class="d-flex-c filter-bar">
-            <input id="name_input" placeholder="Suche nach Nachnamen..." type="text">
+            <input oninput="filterStudent()" id="name_input" placeholder="Suche nach Nachnamen..." type="text">
 
-            <select oninput="filterByProfession()" id="profession_selection">
+            <select oninput="filterStudent()" id="profession_selection">
                 <option value="" disabled selected hidden>Beruf auswählen</option>
                 <option value="fiae">FIAE</option>
                 <option value="fisi">FISI</option>
                 <option value="fidm">FIDM</option>
             </select>
 
-            <select oninput="filterCourses()" id="status_selection">
+            <select oninput="filterStudent()" id="status_selection">
                 <option value="" disabled selected hidden>Status auswählen</option>
-                <option value="red" data-color="red">● Rot</option>
-                <option value="yellow" data-color="yellow">● Gelb</option>
-                <option value="green" data-color="green">● Grün</option>
+                <option value="rot" data-color="red">● Rot</option>
+                <option value="gelb" data-color="yellow">● Gelb</option>
+                <option value="grün" data-color="green">● Grün</option>
             </select>
 
             <button onclick="loadCurrentStudents()">Zurücksetzen</button>
@@ -72,5 +66,11 @@
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>
+
+    <!-- JavaScript-Dateien -->
+    <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </body>
 </html>

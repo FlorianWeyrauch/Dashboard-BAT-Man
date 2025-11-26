@@ -2,7 +2,7 @@ function loadCurrentStudents() {
     let courseHeader = document.getElementById('course_header');
     let courseContainer = document.getElementById('course_student_display');
     let students = [];
-    const currentCourse = getFromSessionStorage('selectedCourse');
+    let currentCourse = getFromSessionStorage('selectedCourse');
     currentCourse.students.forEach(element => {
         students.push(element);
         bubbleSortStudents(students);
@@ -29,14 +29,26 @@ function bubbleSortStudents(arr) {
     return arr;
 }
 
-function filterByProfession() {
+function filterStudent() {
+    let nameInput = document.getElementById("name_input");
     let professionSelect = document.getElementById("profession_selection");
-    let selectedProfession = professionSelect.value;
+    let statusSelect = document.getElementById("status_selection");
     let courseContainer = document.getElementById('course_student_display');
-    const currentCourse = getFromSessionStorage('selectedCourse');
+    let currentCourse = getFromSessionStorage('selectedCourse');
+    
+    let nameFilter = nameInput.value.toLowerCase();
+    let selectedProfession = professionSelect.value;
+    let selectedStatus = statusSelect.value;
+    
     courseContainer.innerHTML = '';
+    
     currentCourse.students.forEach(element => {
-        if (selectedProfession === "" || element.profession.toLowerCase() === selectedProfession.toLowerCase()) {
+        let fullName = (element.firstName + ' ' + element.lastName).toLowerCase();
+        let matchesName = nameFilter === "" || fullName.includes(nameFilter);
+        let matchesProfession = selectedProfession === "" || element.profession.toLowerCase() === selectedProfession.toLowerCase();
+        let matchesStatus = selectedStatus === "" || element.status.toLowerCase() === selectedStatus.toLowerCase();
+        
+        if (matchesName && matchesProfession && matchesStatus) {
             courseContainer.innerHTML += getStudent(element);
         }
     });
