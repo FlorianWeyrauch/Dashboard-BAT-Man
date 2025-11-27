@@ -42,9 +42,9 @@
 
             <select oninput="filterStudent()" id="status_selection">
                 <option value="" disabled selected hidden>Status auswählen</option>
-                <option value="rot" data-color="red">● Rot</option>
-                <option value="gelb" data-color="yellow">● Gelb</option>
-                <option value="grün" data-color="green">● Grün</option>
+                <option value="red" data-color="red">● Rot</option>
+                <option value="yellow" data-color="yellow">● Gelb</option>
+                <option value="green" data-color="green">● Grün</option>
             </select>
 
             <button onclick="loadCurrentStudents()">Zurücksetzen</button>
@@ -52,13 +52,13 @@
         
         <div class="wrapper d-flex-sb-fs">
             <!-- Schueler ansicht -->
-            <div class="course-student-display" id="course_student_display">
-                <!-- Dynamisch generierte Schülerkarten werden hier eingefügt -->
-            </div>
+            <div class="course-student-display" id="course_student_display"></div>
 
             <!-- Kreisdiagramm -->
-            <div class="course-diagram">
-                Diagramm
+             <!-- height width auslagern -->
+            <div class="course-diagram" id="course_diagram">
+                <canvas id="pieChart" width="300" height="300"></canvas>
+                <div class="legend" id="legend"></div>
             </div>
         </div>
     </main>
@@ -71,6 +71,7 @@
     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
+    <script defer src="./js/diagram.js?v=<?php echo time(); ?>"></script>
     <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </body>
 </html>
