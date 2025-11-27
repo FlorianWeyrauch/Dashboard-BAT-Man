@@ -2,7 +2,7 @@
     //phpinfo();
     require_once 'classes/main_class.php';
     $main = new Main();
-    print_r($_SESSION);
+    //print_r($_SESSION);
  
     //echo($_GET['test']." ".$_GET['test2']);
 ?>
@@ -17,8 +17,12 @@
     <link rel="stylesheet" href="./css/standard.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/login.css?v=<?php echo time(); ?>">
     <link rel="icon" href="./assets/icon/bfw-icon.svg" type="image/x-icon">
+    <script>
+        // CSRF-Token für AJAX-Requests verfügbar machen
+        window.CSRF_TOKEN = "<?php echo $_SESSION['csrf_token'] ?? ''; ?>";
+    </script>
 </head>
-<body>
+<body onload="first_load()">
     <header class="d-flex-sb-c">
         <a href="">
             <img class="bfw-icon" src="./assets/icon/bfw-icon.svg" alt="BFW">
@@ -61,7 +65,8 @@
         </div>
     </footer>
     <script src="./node_modules\bootstrap\dist\js\bootstrap.bundle.min.js"></script>
-    <script src="./js/jQueryv3.7.1?v=<?php echo time(); ?>"></script>
+    <script src="./js/jQueryv3.7.1.min.js?v=<?php echo time(); ?>"></script>
+    <script src="./js/first_load.js?v=<?php echo time(); ?>"></script>
     <script src="./js/main.js?v=<?php echo time(); ?>"></script>
     <script src="./js/login.js?v=<?php echo time(); ?>"></script>
 </body>

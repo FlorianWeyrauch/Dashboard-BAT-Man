@@ -1,35 +1,5 @@
 <?php
-session_start();
 header('Content-Type: application/json; charset=utf-8');
-
-// CSRF-Token generieren falls nicht vorhanden
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// CSRF-Token validieren
-$headers = getallheaders();
-if (!isset($headers['X-CSRF-Token']) || $headers['X-CSRF-Token'] !== $_SESSION['csrf_token']) {
-    http_response_code(403);
-    echo json_encode([
-        'error' => true,
-        'code' => 'INVALID_CSRF',
-        'message' => 'Ungültige Anfrage - CSRF-Token fehlt oder ist ungültig'
-    ]);
-    exit;
-}
-
-// Request-Source validieren (optional)
-if (!isset($headers['X-Request-Source']) || $headers['X-Request-Source'] !== 'dashboard-client') {
-    http_response_code(403);
-    echo json_encode([
-        'error' => true,
-        'code' => 'INVALID_SOURCE',
-        'message' => 'Ungültige Anfrage-Quelle'
-    ]);
-    exit;
-}
-
 $err_script = 0;
 
 $name = isset($_POST['name']) ? strtolower(trim($_POST['name'])) : '';
