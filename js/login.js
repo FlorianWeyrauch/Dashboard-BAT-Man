@@ -5,7 +5,7 @@ $("#GetToken").on("click", function () {
 
     // send ajax request to get_token.php
     $.ajax({
-        url: "./ajax/get_token.php",
+        url: "./ajax/token.php",
         type: "POST",
         dataType: "json", // erwartetes JSON vom Server
         data: {
