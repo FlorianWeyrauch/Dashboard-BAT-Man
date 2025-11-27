@@ -54,3 +54,12 @@ function filteredElementNotFound(){
         </div>
     `;
 }
+
+function getLegendLabel(data){
+    return `
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: ${data.color};"></div>
+            <span>${data.label}(${data.value})</span>
+        </div>
+    `;
+}
