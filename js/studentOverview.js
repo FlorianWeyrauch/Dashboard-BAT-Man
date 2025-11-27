@@ -62,3 +62,5 @@ function clearStudentOverview() {
     profession.value = "";
     status.value = "";
 }
+
+console.log(Math.min(10, 10))

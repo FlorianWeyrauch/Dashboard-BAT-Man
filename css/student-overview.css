@@ -149,15 +149,15 @@ input {
     display: inline-block;
 }
 
-.grün {
+.green {
     background-color: var(--traffic-light-green);
 }
 
-.gelb {
+.yellow {
     background-color: var(--traffic-light-yellow);
 }
 
-.rot {
+.red {
     background-color: var(--traffic-light-red);
 }
 
