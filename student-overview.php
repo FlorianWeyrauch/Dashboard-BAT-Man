@@ -72,7 +72,7 @@
     <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/studentOverview.js?v=<?php echo time(); ?>"></script>
-    <!-- <script defer src="./js/diagram.js?v=<?php echo time(); ?>"></script> -->
+    <script defer src="./js/diagram.js?v=<?php echo time(); ?>"></script>
     <script defer src="./node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
 </body>
 </html>
