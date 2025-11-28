@@ -64,6 +64,8 @@
         </div>
     </main>
 
+    <div id="overlay" class="overlay d-none"></div>
+
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>

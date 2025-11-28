@@ -68,3 +68,51 @@ function clearStudentOverview() {
     profession.value = "";
     status.value = "";
 }
+
+function renderSingleStudentOverview(data) {
+    let overlayContainer = document.getElementById("overlay");
+    overlayContainer.classList.remove("d-none");
+    switch (data.profession) {
+        case "FIAE":
+            data.profession = "Fachinformatiker/in Anwendungsentwicklung";
+            break;
+        case "FISI":
+            data.profession = "Fachinformatiker/in Systemintegration";
+            break;
+        case "FIDM":
+            data.profession = "Kauffrau/-mann für Digitalisierungsmanagement";
+            break;
+        default:
+            break;
+    }
+
+    switch (data.status) {
+        case "green":
+            data.status = "Praktikumsvertrag";
+            break;
+        case "yellow":
+            data.status = "Hohe Bewerberaktivität";
+            break;
+        case "red":
+            data.status = "Niedrige Bewerberaktivität";
+            break;
+        default:
+            break;
+    }
+
+    overlayContainer.innerHTML = getSingleStudentOverview(data);
+}
+
+
+
+function closeSingleStudentOverview() {
+    let overlayContainer = document.getElementById("overlay");
+    overlayContainer.classList.add("d-none");
+    overlayContainer.innerHTML = "";
+}
+
+overlay.addEventListener("click", (event) => {
+  if (event.target === overlay) {
+    closeSingleStudentOverview();
+  }
+});

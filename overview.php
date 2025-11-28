@@ -44,7 +44,7 @@
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
     </footer>
         <!-- JavaScript-Dateien -->
-    <script src="./js/jQueryv3.7.1?v=<?php echo time(); ?>"></script>
+    <script src="./js/jQueryv3.7.1.min.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/get_db.js?v=<?php echo time(); ?>"></script>
      <script defer src="./js/session.js?v=<?php echo time(); ?>"></script>
     <script defer src="./js/template.js?v=<?php echo time(); ?>"></script>

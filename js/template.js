@@ -39,7 +39,7 @@ function getCourseHeader(data){
 
 function getStudent(data){
     return `
-        <div class="student-row d-flex-sb-c c-pointer">
+        <div onclick="renderSingleStudentOverview(${JSON.stringify(data).replace(/"/g, '&quot;')})" class="student-row d-flex-sb-c c-pointer">
             <h4 class="student-name">${data.firstName} ${data.lastName}</h4>
             <h4 class="student-profession">${data.profession}</h4>
             <span class="status-traffic-light ${data.status}"></span>
@@ -60,6 +60,19 @@ function getLegendLabel(data){
         <div class="legend-item">
             <div class="legend-color" style="background-color: ${data.color};"></div>
             <span>${data.label}(${data.value})</span>
+        </div>
+    `;
+}
+
+function getSingleStudentOverview(data){
+    return `
+        <div class="overlay-student-overview">
+            <div class="btn-close-container">
+                <span class="c-pointer btn-close-overview" onclick="closeSingleStudentOverview()">x</span>
+            </div>
+            <h1>${data.firstName} ${data.lastName}</h1>
+            <h4>${data.profession}</h4>
+            <p>Status: ${data.status}</p>
         </div>
     `;
 }
