@@ -14,7 +14,7 @@
     
 </head>
 
-<body onload="loadCurrentStudents()"> <!-- onload="loadStudentOverview()" -->
+<body onload="init()"> <!-- onload="loadStudentOverview()" -->
 
     <header class="d-flex-sb-c">
         <a href="./overview.php">
@@ -33,14 +33,14 @@
         <div class="d-flex-c filter-bar">
             <input oninput="filterStudent()" id="name_input" placeholder="Suche nach Nachnamen..." type="text">
 
-            <select oninput="filterStudent()" id="profession_selection">
+            <select class="c-pointer" oninput="filterStudent()" id="profession_selection">
                 <option value="" disabled selected hidden>Beruf auswählen</option>
                 <option value="fiae">FIAE</option>
                 <option value="fisi">FISI</option>
                 <option value="fidm">FIDM</option>
             </select>
 
-            <select oninput="filterStudent()" id="status_selection">
+            <select class="c-pointer" oninput="filterStudent()" id="status_selection">
                 <option value="" disabled selected hidden>Status auswählen</option>
                 <option value="red" data-color="red">● Rot</option>
                 <option value="yellow" data-color="yellow">● Gelb</option>
@@ -56,12 +56,15 @@
 
             <!-- Kreisdiagramm -->
              <!-- height width auslagern -->
-            <div class="course-diagram" id="course_diagram">
-                <canvas id="pieChart" width="300" height="300"></canvas>
-                <div class="legend" id="legend"></div>
+            <div class="course-diagram d-flex-c-c" id="course_diagram">
+                <h4>Bewerbungsaktivität:</h4>
+                <canvas id="pieChart" width="270" height="270"></canvas>
+                <div class="legend d-flex-c" id="legend"></div>
             </div>
         </div>
     </main>
+
+    <div id="overlay" class="overlay d-none"></div>
 
     <footer>
         <div>© 2025 Berufsförderungswerk Nürnberg GmbH</div>
