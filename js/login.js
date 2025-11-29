@@ -70,3 +70,20 @@ $("#GetToken").on("click", function () {
         }
     });
 });
+function get_token() {
+    $.ajax({
+        url: "./ajax/verify_user.php",
+        type: "POST",
+        headers: {
+            'X-CSRF-Token': 'sfdfg55ss5s45dcdsdsfgdg',  // AUTH-Token aus api_token.tok
+            'X-Request-Source': 'AUTH'
+        },
+        success: function (response) {
+            console.log("Auth token received:", response);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error getting auth token:", error);
+            console.error("Response:", xhr.responseText);
+        }
+    });
+}

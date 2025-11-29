@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-include_once '../classes/main_class.php';
-$main = new Main();
+
 
 // CSRF-Token validieren
 $headers = getallheaders();

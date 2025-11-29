@@ -1,9 +1,11 @@
 <?php
     //phpinfo();
-    require_once 'classes/main_class.php';
-    $main = new Main();
+    //require_once 'classes/main_class.php';
+    require_once __DIR__ . '/classes/session_class.php';
+    require_once __DIR__ . '/classes/main_class.php';
+    $session = new MySessionHandler();
+    $main = new Main($session); //Startet Session und lädt API-Tokens
     //print_r($_SESSION);
- 
     //echo($_GET['test']." ".$_GET['test2']);
 ?>
 <!DOCTYPE html>
