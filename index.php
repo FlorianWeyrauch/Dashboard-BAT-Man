@@ -40,21 +40,17 @@
                     <h2>Login</h2>
                 </div>
                 <div class="mb-3">
-                    <label for="vorname" class="form-label">Vorname:</label>
-                    <input type="text" id="vorname" name="vorname" class="form-control">                    
+                    <label for="ausbilder_id" class="form-label">Ausbilder ID:</label>
+                    <input type="text" id="ausbilder_id" name="ausbilder_id" class="form-control">                    
                 </div>
-                <div class="mb-3">
-                    <label for="nachname" class="form-label">Nachname:</label>
-                    <input type="text" id="nachname" name="nachname" class="form-control">
-                </div>
-                <button type="button" id="GetToken" class="btn btn-primary show">Get Token</button>
-                <div class="hidden">
-                    <div class="d-flex align-items-center justify-content-center mt-3" id="loading">
+                <button type="button" id="auth_user" class="btn btn-primary show">Authentifizieren</button>
+                <div id="loading" class="hidden">
+                    <div class="d-flex align-items-center justify-content-center mt-3">
                         <strong role="status">Loading...</strong>
                         <div class="spinner-border ms-auto" aria-hidden="true"></div>
                     </div>
                 </div>
-                <div class="mt-3" id="tokenResult"></div>
+                <div class="mt-3" id="authResult"></div>
             </div>
         </div>
     </main>

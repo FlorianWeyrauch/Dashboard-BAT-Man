@@ -1,89 +1,69 @@
-$("#GetToken").on("click", function () {
-    // get name and vorname values
-    var name = $("#name").val();
-    var vorname = $("#vorname").val();
-
-    // send ajax request to get_token.php
-    $.ajax({
-        url: "./ajax/token.php",
-        type: "POST",
-        dataType: "json", // erwartetes JSON vom Server
-        data: {
-            name: name,
-            vorname: vorname
-        },
-        success: function (response) {
-            //
-            
-            console.log('AJAX success:', response);
-            if (!response) {
-                $("#tokenResult").text('Ihre Antwort konnte vom Server nicht verarbeitet werden.');
-                return;
-            }
-            // Response-Fehler true ist 
-            if (response.error) {
-                //message übergeben wenn nicht Standardnachricht
-                var message = response.message || 'Ein Fehler ist aufgetreten';
-                $("#tokenResult").text(message+''+response.code);
-                console.log(response.code);
-                return;
-            }else{
-
-                // Normaler Erfolgsfall
-               
-                $("#tokenResult").text(message+''+response.code);
-                return;
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('AJAX error:', status, error);
-
-            // Versuche JSON-Fehlerkörper zu parsen
-            var body = xhr.responseJSON;
-            if (!body) {
-                try {
-                    body = JSON.parse(xhr.responseText || '{}');
-                } catch (e) {
-                    body = null;
+$("#auth_user").on("click", function () {
+    //id loading sichtbar machen
+    $("#loading").show();
+    // get ausbilder_id value
+    let aus_id = $("#ausbilder_id").val();
+    let error=false;
+    let errorMessage='';
+    // check if aus_id is empty
+    if (!aus_id) {
+        errorMessage='Bitte Ausbilder ID angeben.';
+        error=true;
+    }
+    //check if aus_id is numeric
+    if (isNaN(aus_id)) {
+        errorMessage='Ausbilder ID muss eine Zahl sein.';
+        error=true;
+    }
+    //check if aus_id is <= 5 and > 3 digits
+    if (aus_id.length < 3 || aus_id.length > 5) {
+        errorMessage='Ausbilder ID muss zwischen 3 und 5 Ziffern lang sein.';
+        error=true;
+    }
+    if(error){
+        $("#loading").hide();
+        $("#authResult").text(errorMessage);
+    }else{
+        // send ajax request to get_token.php
+        $.ajax({
+            url: "ajax/verify_user.php",
+            type: "POST",
+            dataType: "json", // erwartetes JSON vom Server
+            headers: {
+                'X-CSRF-Token': 'sfdfg55ss5s45dcdsdsfgdg',  // AUTH-Token aus api_token.tok
+                'X-Request-Source': 'AUTH'
+            },
+            data: {
+                ausbilder_id: aus_id
+            },
+            success: function (response) {
+                       
+                console.log('AJAX success:', response);
+                if (!response) {
+                    $("#authResult").text('Ihre Antwort konnte vom Server nicht verarbeitet werden.');
+                    return;
                 }
-            }
-
-            if (body && body.code) {
-                var userMsg = body.message || 'Serverfehler';
-                switch (body.code) {
-                    case 'MISSING_PARAMS':
-                        userMsg = 'Bitte Name oder Vorname angeben.';
-                        break;
-                    case 'TOKEN_GENERATION_FAILED':
-                        userMsg = 'Token-Generierung fehlgeschlagen. Versuchen Sie es später.';
-                        break;
+                // Response-Fehler true ist 
+                if (response.error) {
+                    //message übergeben wenn nicht Standardnachricht
+                    var message = response.message || 'Ein Fehler ist aufgetreten';
+                    $("#authResult").text(message + '' + response.code);
+                    console.log(response.code);
+                    return;
+                }else{
+                    // Normaler Erfolgsfall 
+                    var message = 'Erfolgreich email mit Token versendet. ';
+                    $("#authResult").text(message + '' + response.code);
+                    return;
                 }
-                $("#tokenResult").text(userMsg);
-            } else {
-                // Fallback: generische Fehlermeldung
-                console.log('Server response:', xhr.responseText);
-                $("#tokenResult").text('Fehler beim Abrufen des Tokens: ' + status + ' ' + error);
+            },
+            error: function (xhr, status, error) {
+                console.error("Response:", xhr.responseText);
+            },
+            complete: function () {
+                $("#loading").hide();
+                console.log('AJAX complete');
             }
-        },
-        complete: function () {
-            console.log('AJAX complete');
-        }
-    });
+        });
+    };
 });
-function get_token() {
-    $.ajax({
-        url: "./ajax/verify_user.php",
-        type: "POST",
-        headers: {
-            'X-CSRF-Token': 'sfdfg55ss5s45dcdsdsfgdg',  // AUTH-Token aus api_token.tok
-            'X-Request-Source': 'AUTH'
-        },
-        success: function (response) {
-            console.log("Auth token received:", response);
-        },
-        error: function (xhr, status, error) {
-            console.error("Error getting auth token:", error);
-            console.error("Response:", xhr.responseText);
-        }
-    });
-}
