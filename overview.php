@@ -1,3 +1,32 @@
+<?php
+// Datenbank-Verbindungstest
+$host = "192.168.9.123";
+$user = "it202407";
+$pass = "batman";
+$db   = "batman";
+
+echo "<script>console.log('DB Connection Test started...');</script>";
+
+try {
+    $conn = new mysqli($host, $user, $pass, $db);
+    
+    if ($conn->connect_error) {
+        $error = addslashes($conn->connect_error);
+        echo "<script>console.error('Connection failed: $error');</script>";
+    } else {
+        $serverInfo = addslashes($conn->server_info);
+        $hostInfo = addslashes($conn->host_info);
+        echo "<script>console.log('✅ Database connection successful!');</script>";
+        echo "<script>console.log('Server Info: $serverInfo');</script>";
+        echo "<script>console.log('Host Info: $hostInfo');</script>";
+        $conn->close();
+    }
+} catch (Exception $e) {
+    $message = addslashes($e->getMessage());
+    echo "<script>console.error('❌ Exception: $message');</script>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 <head>

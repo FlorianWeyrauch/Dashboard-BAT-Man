@@ -13,6 +13,9 @@ async function loadCoursesFromDB() {
         return response;
     } catch (error) {
         console.error('AJAX error:', error);
+        console.error('Status:', error.status);
+        console.error('Response Text:', error.responseText);
+        console.error('Status Text:', error.statusText);
         return null;
     }
 }
