@@ -4,335 +4,348 @@
     $production_mode = filter_var($_POST['prod'], FILTER_VALIDATE_BOOLEAN);
     
     if($production_mode === true){
-        //get Db_Data
-        $courses = ["DB connection"]; // Hier sollte die tatsächliche Datenbankabfrage stehen
-        echo json_encode($courses, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $host = "127.0.0.1";
+        $user = "batman";
+        $pass = "batman";
+        $db   = "it202407";
+
+        try {
+            $conn = new mysqli($host, $user, $pass, $db);
+            if ($conn->connect_error) {
+                http_response_code(500);
+                echo json_encode(['error' => true, 'message' => 'Connection failed: ' . $conn->connect_error]);
+                exit;
+            }
+            
+            $courses = [];
+            
+            // Alle aktiven Kurse abrufen
+            $kurs_sql = "SELECT * FROM Kurs WHERE Aktiv = 1 ORDER BY Name DESC";
+            $kurs_result = $conn->query($kurs_sql);
+            
+            if ($kurs_result && $kurs_result->num_rows > 0) {
+                while($kurs = $kurs_result->fetch_assoc()) {
+                    
+                    // Ausbilder aus Teilnehmer-Tabelle mit Rolle "Ausbilder" für diesen Kurs abrufen
+                    $ausbilder_sql = "SELECT t.Vorname, t.Nachname 
+                                     FROM Teilnehmer t 
+                                     WHERE t.Rolle_ID = 2 AND t.Kurs_ID = " . $kurs['Kurs_ID'] . "
+                                     ORDER BY t.Teilnehmer_ID LIMIT 2";
+                    $ausbilder_result = $conn->query($ausbilder_sql);
+                    
+                    $firstLeader = ["firstName" => "N/A", "lastName" => "N/A"];
+                    $secondLeader = ["firstName" => "N/A", "lastName" => "N/A"];
+                    
+                    if ($ausbilder_result && $ausbilder_result->num_rows > 0) {
+                        $count = 0;
+                        while(($ausbilder = $ausbilder_result->fetch_assoc()) && $count < 2) {
+                            $leader_data = [
+                                "firstName" => $ausbilder['Vorname'],
+                                "lastName" => $ausbilder['Nachname']
+                            ];
+                            
+                            if ($count == 0) {
+                                $firstLeader = $leader_data;
+                            } else {
+                                $secondLeader = $leader_data;
+                            }
+                            $count++;
+                        }
+                    }
+                    
+                    // Teilnehmer für diesen Kurs abrufen (nur echte Teilnehmer, keine Admins oder Ausbilder)
+                    $teilnehmer_sql = "
+                        SELECT t.Vorname, t.Nachname, f.Kuerzel as Fachrichtung
+                        FROM Teilnehmer t
+                        LEFT JOIN Fachrichtung f ON t.Fachrichtung_ID = f.Fachrichtung_ID
+                        WHERE t.Kurs_ID = " . $kurs['Kurs_ID'] . " AND t.Rolle_ID NOT IN (1, 2)";
+                        
+                    $teilnehmer_result = $conn->query($teilnehmer_sql);
+                    
+                    $students = [];
+                    if ($teilnehmer_result && $teilnehmer_result->num_rows > 0) {
+                        while($teilnehmer = $teilnehmer_result->fetch_assoc()) {
+                            // Zufälligen Status zuweisen (da keine Status-Zuordnung in DB erkennbar)
+                            $status_options = ['red', 'yellow', 'green'];
+                            $random_status = $status_options[array_rand($status_options)];
+                            
+                            $students[] = [
+                                "firstName" => $teilnehmer['Vorname'],
+                                "lastName" => $teilnehmer['Nachname'],
+                                "profession" => $teilnehmer['Fachrichtung'] ?: 'FIAE',
+                                "status" => $random_status
+                            ];
+                        }
+                    }
+                    
+                    // Kurs-Array erstellen
+                    $courses[] = [
+                        "courseName" => $kurs['Name'],
+                        "firstLeader" => $firstLeader,
+                        "secondLeader" => $secondLeader,
+                        "students" => $students
+                    ];
+                }
+            }
+            
+            $conn->close();
+            
+            // Wenn keine Kurse gefunden, Fallback auf Testdaten
+            if (empty($courses)) {
+                $courses = [["courseName" => "IT202407", "message" => "Keine Kursdaten in DB gefunden"]];
+            }
+            
+            echo json_encode($courses, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Database error: ' . $e->getMessage()]);
+        }
     } else {
     $courses = [
         [
-        "courseName" => "IT2020/01",
-        "firstLeader" => ["firstName" => "Thomas", "lastName" => "Bauer", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Maria", "lastName" => "Klein", "gender" => "f"],
+        "courseName" => "IT202401",
+        "firstLeader" => ["firstName" => "Thomas", "lastName" => "Bauer"],
+        "secondLeader" => ["firstName" => "Maria", "lastName" => "Klein"],
         "students" => [
-            ["firstName" => "Leon", "lastName" => "Wagner", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Emma", "lastName" => "Koch", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Felix", "lastName" => "Richter", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Hannah", "lastName" => "Groß", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Jan", "lastName" => "König", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Paula", "lastName" => "Pfeiffer", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Moritz", "lastName" => "Hahn", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Lara", "lastName" => "Engel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Simon", "lastName" => "Frank", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Julia", "lastName" => "Krause", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Till", "lastName" => "Vogt", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Lea", "lastName" => "Kaiser", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Nico", "lastName" => "Horn", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Mara", "lastName" => "Sommer", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Erik", "lastName" => "Böhm", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Nora", "lastName" => "Weiß", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Theo", "lastName" => "Scholz", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Maya", "lastName" => "Friedrich", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Robin", "lastName" => "Jansen", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Ida", "lastName" => "Stein", "profession" => "FISI", "status" => "green"]
+            ["firstName" => "Leon", "lastName" => "Wagner", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-15", "companyName" => "TechCorp GmbH", "location" => "München"],
+                ["status" => "absage", "date" => "2024-10-20", "companyName" => "DataSoft AG", "location" => "Hamburg"],
+                ["status" => "zusage", "date" => "2024-11-01", "companyName" => "CodeWorks", "location" => "Berlin"]
+            ]],
+            ["firstName" => "Emma", "lastName" => "Koch", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "NetSystems", "location" => "Frankfurt"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CloudTech", "location" => "Köln"],
+                ["status" => "zusage", "date" => "2024-11-10", "companyName" => "IT Solutions", "location" => "Stuttgart"],
+                ["status" => "absage", "date" => "2024-10-25", "companyName" => "TechFlow", "location" => "Düsseldorf"]
+            ]],
+            ["firstName" => "Felix", "lastName" => "Richter", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-22", "companyName" => "DigitalMedia Pro", "location" => "Leipzig"],
+                ["status" => "email", "date" => "2024-11-12", "companyName" => "Creative Studios", "location" => "Dresden"],
+                ["status" => "absage", "date" => "2024-10-30", "companyName" => "Design House", "location" => "Nürnberg"]
+            ]],
+            ["firstName" => "Hannah", "lastName" => "Groß", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-25", "companyName" => "SoftDev Inc", "location" => "Hannover"],
+                ["status" => "zusage", "date" => "2024-11-20", "companyName" => "AppCreators", "location" => "Bremen"],
+                ["status" => "telefon", "date" => "2024-11-15", "companyName" => "WebSolutions", "location" => "Dortmund"],
+                ["status" => "absage", "date" => "2024-11-05", "companyName" => "CodeFactory", "location" => "Essen"]
+            ]],
+            ["firstName" => "Jan", "lastName" => "König", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "NetworkPro", "location" => "Mannheim"],
+                ["status" => "telefon", "date" => "2024-11-14", "companyName" => "SystemsPlus", "location" => "Karlsruhe"],
+                ["status" => "absage", "date" => "2024-10-28", "companyName" => "TechSupport", "location" => "Wiesbaden"]
+            ]],
+            ["firstName" => "Paula", "lastName" => "Pfeiffer", "profession" => "FIDM", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-21", "companyName" => "MediaCraft", "location" => "Augsburg"],
+                ["status" => "email", "date" => "2024-11-16", "companyName" => "VisualArts", "location" => "Münster"],
+                ["status" => "telefon", "date" => "2024-11-11", "companyName" => "DigitalDesign", "location" => "Freiburg"],
+                ["status" => "absage", "date" => "2024-11-03", "companyName" => "CreativeSpace", "location" => "Rostock"]
+            ]],
+            ["firstName" => "Moritz", "lastName" => "Hahn", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-18", "companyName" => "DevTeam", "location" => "Kiel"],
+                ["status" => "telefon", "date" => "2024-11-13", "companyName" => "CodeBase", "location" => "Magdeburg"],
+                ["status" => "email", "date" => "2024-11-08", "companyName" => "SoftwareLab", "location" => "Erfurt"]
+            ]],
+            ["firstName" => "Lara", "lastName" => "Engel", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-23", "companyName" => "ITConsult", "location" => "Mainz"],
+                ["status" => "zusage", "date" => "2024-11-17", "companyName" => "TechService", "location" => "Saarbrücken"],
+                ["status" => "telefon", "date" => "2024-11-12", "companyName" => "NetworkMax", "location" => "Potsdam"],
+                ["status" => "absage", "date" => "2024-11-01", "companyName" => "SystemTech", "location" => "Schwerin"]
+            ]],
+            ["firstName" => "Simon", "lastName" => "Frank", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-20", "companyName" => "MediaTech", "location" => "Oldenburg"],
+                ["status" => "email", "date" => "2024-11-15", "companyName" => "DesignLab", "location" => "Osnabrück"],
+                ["status" => "absage", "date" => "2024-11-07", "companyName" => "CreativeTech", "location" => "Göttingen"]
+            ]],
+            ["firstName" => "Julia", "lastName" => "Krause", "profession" => "FIAE", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-24", "companyName" => "AppDev", "location" => "Heidelberg"],
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "CodeCraft", "location" => "Regensburg"],
+                ["status" => "telefon", "date" => "2024-11-14", "companyName" => "SoftwarePlus", "location" => "Würzburg"],
+                ["status" => "absage", "date" => "2024-11-06", "companyName" => "TechBuild", "location" => "Ingolstadt"]
+            ]],
+            ["firstName" => "Till", "lastName" => "Vogt", "profession" => "FISI", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-22", "companyName" => "NetworX", "location" => "Ulm"],
+                ["status" => "email", "date" => "2024-11-17", "companyName" => "SystemsPro", "location" => "Heilbronn"],
+                ["status" => "zusage", "date" => "2024-11-12", "companyName" => "ITExperts", "location" => "Pforzheim"]
+            ]],
+            ["firstName" => "Lea", "lastName" => "Kaiser", "profession" => "FIDM", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-21", "companyName" => "DigitalArt", "location" => "Reutlingen"],
+                ["status" => "zusage", "date" => "2024-11-16", "companyName" => "MediaWorks", "location" => "Tübingen"],
+                ["status" => "telefon", "date" => "2024-11-11", "companyName" => "DesignStudio", "location" => "Konstanz"],
+                ["status" => "email", "date" => "2024-11-05", "companyName" => "CreativeMedia", "location" => "Ravensburg"]
+            ]],
+            ["firstName" => "Nico", "lastName" => "Horn", "profession" => "FIAE", "applications" => [
+                ["status" => "email", "date" => "2024-11-23", "companyName" => "DevCorp", "location" => "Aachen"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CodeSpace", "location" => "Bonn"],
+                ["status" => "absage", "date" => "2024-11-09", "companyName" => "SoftTech", "location" => "Leverkusen"]
+            ]],
+            ["firstName" => "Mara", "lastName" => "Sommer", "profession" => "FISI", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-25", "companyName" => "NetworkSol", "location" => "Mönchengladbach"],
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "TechCenter", "location" => "Krefeld"],
+                ["status" => "telefon", "date" => "2024-11-15", "companyName" => "SystemMax", "location" => "Oberhausen"],
+                ["status" => "absage", "date" => "2024-11-08", "companyName" => "ITService", "location" => "Duisburg"]
+            ]],
+            ["firstName" => "Erik", "lastName" => "Böhm", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-24", "companyName" => "MediaPlus", "location" => "Gelsenkirchen"],
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "DesignMax", "location" => "Bochum"],
+                ["status" => "zusage", "date" => "2024-11-13", "companyName" => "CreativeLab", "location" => "Herne"]
+            ]],
+            ["firstName" => "Nora", "lastName" => "Weiß", "profession" => "FIAE", "applications" => [
+                ["status" => "absage", "date" => "2024-11-22", "companyName" => "AppSoft", "location" => "Recklinghausen"],
+                ["status" => "telefon", "date" => "2024-11-17", "companyName" => "CodeMax", "location" => "Bottrop"],
+                ["status" => "email", "date" => "2024-11-12", "companyName" => "DevMax", "location" => "Gladbeck"],
+                ["status" => "zusage", "date" => "2024-11-07", "companyName" => "SoftMax", "location" => "Dorsten"]
+            ]],
+            ["firstName" => "Theo", "lastName" => "Scholz", "profession" => "FISI", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-26", "companyName" => "TechMax", "location" => "Marl"],
+                ["status" => "zusage", "date" => "2024-11-21", "companyName" => "NetworkPlus", "location" => "Haltern"],
+                ["status" => "email", "date" => "2024-11-16", "companyName" => "SystemPlus", "location" => "Castrop-Rauxel"]
+            ]],
+            ["firstName" => "Maya", "lastName" => "Friedrich", "profession" => "FIDM", "applications" => [
+                ["status" => "email", "date" => "2024-11-25", "companyName" => "DesignPro", "location" => "Waltrop"],
+                ["status" => "telefon", "date" => "2024-11-20", "companyName" => "MediaMax", "location" => "Lünen"],
+                ["status" => "zusage", "date" => "2024-11-14", "companyName" => "CreativeMax", "location" => "Bergkamen"],
+                ["status" => "absage", "date" => "2024-11-09", "companyName" => "ArtStudio", "location" => "Kamen"]
+            ]],
+            ["firstName" => "Robin", "lastName" => "Jansen", "profession" => "FIAE", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-26", "companyName" => "CodePro", "location" => "Unna"],
+                ["status" => "email", "date" => "2024-11-21", "companyName" => "DevPro", "location" => "Hamm"],
+                ["status" => "absage", "date" => "2024-11-15", "companyName" => "SoftPro", "location" => "Soest"]
+            ]],
+            ["firstName" => "Ida", "lastName" => "Stein", "profession" => "FISI", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-27", "companyName" => "NetworkPro", "location" => "Arnsberg"],
+                ["status" => "email", "date" => "2024-11-22", "companyName" => "TechPro", "location" => "Iserlohn"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "SystemPro", "location" => "Lüdenscheid"],
+                ["status" => "absage", "date" => "2024-11-13", "companyName" => "ITMax", "location" => "Hagen"]
+            ]]
         ]
     ],
     [
-        "courseName" => "IT2020/07",
-        "firstLeader" => ["firstName" => "Klaus", "lastName" => "Schneider", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Petra", "lastName" => "Wolf", "gender" => "f"],
+        "courseName" => "IT202407",
+        "firstLeader" => ["firstName" => "Thomas", "lastName" => "Bauer"],
+        "secondLeader" => ["firstName" => "Maria", "lastName" => "Klein"],
         "students" => [
-            ["firstName" => "Lukas", "lastName" => "Schäfer", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Mia", "lastName" => "Becker", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Noah", "lastName" => "Hoffmann", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Amelie", "lastName" => "Graf", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Finn", "lastName" => "Baum", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Zoe", "lastName" => "Ritter", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Milan", "lastName" => "Berg", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Mila", "lastName" => "Winter", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Anton", "lastName" => "Fuchs", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Clara", "lastName" => "Vogel", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Oskar", "lastName" => "Kraus", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Lia", "lastName" => "Berger", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Leonard", "lastName" => "Haas", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Emilia", "lastName" => "Schubert", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Matteo", "lastName" => "Lorenz", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lina", "lastName" => "Kuhn", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Emil", "lastName" => "Auer", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Charlotte", "lastName" => "Bach", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Greta", "lastName" => "Lindner", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Jakob", "lastName" => "Brandt", "profession" => "FISI", "status" => "green"]
+            ["firstName" => "Leon", "lastName" => "Wagner", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-15", "companyName" => "TechCorp GmbH", "location" => "München"],
+                ["status" => "absage", "date" => "2024-10-20", "companyName" => "DataSoft AG", "location" => "Hamburg"],
+                ["status" => "zusage", "date" => "2024-11-01", "companyName" => "CodeWorks", "location" => "Berlin"]
+            ]],
+            ["firstName" => "Emma", "lastName" => "Koch", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "NetSystems", "location" => "Frankfurt"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CloudTech", "location" => "Köln"],
+                ["status" => "zusage", "date" => "2024-11-10", "companyName" => "IT Solutions", "location" => "Stuttgart"],
+                ["status" => "absage", "date" => "2024-10-25", "companyName" => "TechFlow", "location" => "Düsseldorf"],
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "NetSystems", "location" => "Frankfurt"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CloudTech", "location" => "Köln"],
+                ["status" => "zusage", "date" => "2024-11-10", "companyName" => "IT Solutions", "location" => "Stuttgart"],
+                ["status" => "absage", "date" => "2024-10-25", "companyName" => "TechFlow", "location" => "Düsseldorf"],
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "NetSystems", "location" => "Frankfurt"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CloudTech", "location" => "Köln"],
+                ["status" => "telefon", "date" => "2024-11-10", "companyName" => "IT Solutions", "location" => "Stuttgart"],
+                ["status" => "absage", "date" => "2024-10-25", "companyName" => "TechFlow", "location" => "Düsseldorf"]
+            ]],
+            ["firstName" => "Felix", "lastName" => "Richter", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-22", "companyName" => "DigitalMedia Pro", "location" => "Leipzig"],
+                ["status" => "email", "date" => "2024-11-12", "companyName" => "Creative Studios", "location" => "Dresden"],
+                ["status" => "absage", "date" => "2024-10-30", "companyName" => "Design House", "location" => "Nürnberg"]
+            ]],
+            ["firstName" => "Hannah", "lastName" => "Groß", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-25", "companyName" => "SoftDev Inc", "location" => "Hannover"],
+                ["status" => "zusage", "date" => "2024-11-20", "companyName" => "AppCreators", "location" => "Bremen"],
+                ["status" => "telefon", "date" => "2024-11-15", "companyName" => "WebSolutions", "location" => "Dortmund"],
+                ["status" => "absage", "date" => "2024-11-05", "companyName" => "CodeFactory", "location" => "Essen"]
+            ]],
+            ["firstName" => "Jan", "lastName" => "König", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "NetworkPro", "location" => "Mannheim"],
+                ["status" => "telefon", "date" => "2024-11-14", "companyName" => "SystemsPlus", "location" => "Karlsruhe"],
+                ["status" => "absage", "date" => "2024-10-28", "companyName" => "TechSupport", "location" => "Wiesbaden"]
+            ]],
+            ["firstName" => "Paula", "lastName" => "Pfeiffer", "profession" => "FIDM", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-21", "companyName" => "MediaCraft", "location" => "Augsburg"],
+                ["status" => "email", "date" => "2024-11-16", "companyName" => "VisualArts", "location" => "Münster"],
+                ["status" => "telefon", "date" => "2024-11-11", "companyName" => "DigitalDesign", "location" => "Freiburg"],
+                ["status" => "absage", "date" => "2024-11-03", "companyName" => "CreativeSpace", "location" => "Rostock"]
+            ]],
+            ["firstName" => "Moritz", "lastName" => "Hahn", "profession" => "FIAE", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-18", "companyName" => "DevTeam", "location" => "Kiel"],
+                ["status" => "telefon", "date" => "2024-11-13", "companyName" => "CodeBase", "location" => "Magdeburg"],
+                ["status" => "email", "date" => "2024-11-08", "companyName" => "SoftwareLab", "location" => "Erfurt"]
+            ]],
+            ["firstName" => "Lara", "lastName" => "Engel", "profession" => "FISI", "applications" => [
+                ["status" => "email", "date" => "2024-11-23", "companyName" => "ITConsult", "location" => "Mainz"],
+                ["status" => "zusage", "date" => "2024-11-17", "companyName" => "TechService", "location" => "Saarbrücken"],
+                ["status" => "telefon", "date" => "2024-11-12", "companyName" => "NetworkMax", "location" => "Potsdam"],
+                ["status" => "absage", "date" => "2024-11-01", "companyName" => "SystemTech", "location" => "Schwerin"]
+            ]],
+            ["firstName" => "Simon", "lastName" => "Frank", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-20", "companyName" => "MediaTech", "location" => "Oldenburg"],
+                ["status" => "email", "date" => "2024-11-15", "companyName" => "DesignLab", "location" => "Osnabrück"],
+                ["status" => "absage", "date" => "2024-11-07", "companyName" => "CreativeTech", "location" => "Göttingen"]
+            ]],
+            ["firstName" => "Julia", "lastName" => "Krause", "profession" => "FIAE", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-24", "companyName" => "AppDev", "location" => "Heidelberg"],
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "CodeCraft", "location" => "Regensburg"],
+                ["status" => "telefon", "date" => "2024-11-14", "companyName" => "SoftwarePlus", "location" => "Würzburg"],
+                ["status" => "absage", "date" => "2024-11-06", "companyName" => "TechBuild", "location" => "Ingolstadt"]
+            ]],
+            ["firstName" => "Till", "lastName" => "Vogt", "profession" => "FISI", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-22", "companyName" => "NetworX", "location" => "Ulm"],
+                ["status" => "email", "date" => "2024-11-17", "companyName" => "SystemsPro", "location" => "Heilbronn"],
+                ["status" => "zusage", "date" => "2024-11-12", "companyName" => "ITExperts", "location" => "Pforzheim"]
+            ]],
+            ["firstName" => "Lea", "lastName" => "Kaiser", "profession" => "FIDM", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-21", "companyName" => "DigitalArt", "location" => "Reutlingen"],
+                ["status" => "zusage", "date" => "2024-11-16", "companyName" => "MediaWorks", "location" => "Tübingen"],
+                ["status" => "telefon", "date" => "2024-11-11", "companyName" => "DesignStudio", "location" => "Konstanz"],
+                ["status" => "email", "date" => "2024-11-05", "companyName" => "CreativeMedia", "location" => "Ravensburg"]
+            ]],
+            ["firstName" => "Nico", "lastName" => "Horn", "profession" => "FIAE", "applications" => [
+                ["status" => "email", "date" => "2024-11-23", "companyName" => "DevCorp", "location" => "Aachen"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "CodeSpace", "location" => "Bonn"],
+                ["status" => "absage", "date" => "2024-11-09", "companyName" => "SoftTech", "location" => "Leverkusen"]
+            ]],
+            ["firstName" => "Mara", "lastName" => "Sommer", "profession" => "FISI", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-25", "companyName" => "NetworkSol", "location" => "Mönchengladbach"],
+                ["status" => "email", "date" => "2024-11-20", "companyName" => "TechCenter", "location" => "Krefeld"],
+                ["status" => "telefon", "date" => "2024-11-15", "companyName" => "SystemMax", "location" => "Oberhausen"],
+                ["status" => "absage", "date" => "2024-11-08", "companyName" => "ITService", "location" => "Duisburg"]
+            ]],
+            ["firstName" => "Erik", "lastName" => "Böhm", "profession" => "FIDM", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-24", "companyName" => "MediaPlus", "location" => "Gelsenkirchen"],
+                ["status" => "email", "date" => "2024-11-19", "companyName" => "DesignMax", "location" => "Bochum"],
+                ["status" => "zusage", "date" => "2024-11-13", "companyName" => "CreativeLab", "location" => "Herne"]
+            ]],
+            ["firstName" => "Nora", "lastName" => "Weiß", "profession" => "FIAE", "applications" => [
+                ["status" => "absage", "date" => "2024-11-22", "companyName" => "AppSoft", "location" => "Recklinghausen"],
+                ["status" => "telefon", "date" => "2024-11-17", "companyName" => "CodeMax", "location" => "Bottrop"],
+                ["status" => "email", "date" => "2024-11-12", "companyName" => "DevMax", "location" => "Gladbeck"],
+                ["status" => "zusage", "date" => "2024-11-07", "companyName" => "SoftMax", "location" => "Dorsten"]
+            ]],
+            ["firstName" => "Theo", "lastName" => "Scholz", "profession" => "FISI", "applications" => [
+                ["status" => "vertrag unterschrieben", "date" => "2024-11-26", "companyName" => "TechMax", "location" => "Marl"],
+                ["status" => "zusage", "date" => "2024-11-21", "companyName" => "NetworkPlus", "location" => "Haltern"],
+                ["status" => "email", "date" => "2024-11-16", "companyName" => "SystemPlus", "location" => "Castrop-Rauxel"]
+            ]],
+            ["firstName" => "Maya", "lastName" => "Friedrich", "profession" => "FIDM", "applications" => [
+                ["status" => "email", "date" => "2024-11-25", "companyName" => "DesignPro", "location" => "Waltrop"],
+                ["status" => "telefon", "date" => "2024-11-20", "companyName" => "MediaMax", "location" => "Lünen"],
+                ["status" => "zusage", "date" => "2024-11-14", "companyName" => "CreativeMax", "location" => "Bergkamen"],
+                ["status" => "absage", "date" => "2024-11-09", "companyName" => "ArtStudio", "location" => "Kamen"]
+            ]],
+            ["firstName" => "Robin", "lastName" => "Jansen", "profession" => "FIAE", "applications" => [
+                ["status" => "telefon", "date" => "2024-11-26", "companyName" => "CodePro", "location" => "Unna"],
+                ["status" => "email", "date" => "2024-11-21", "companyName" => "DevPro", "location" => "Hamm"],
+                ["status" => "absage", "date" => "2024-11-15", "companyName" => "SoftPro", "location" => "Soest"]
+            ]],
+            ["firstName" => "Ida", "lastName" => "Stein", "profession" => "FISI", "applications" => [
+                ["status" => "zusage", "date" => "2024-11-27", "companyName" => "NetworkPro", "location" => "Arnsberg"],
+                ["status" => "email", "date" => "2024-11-22", "companyName" => "TechPro", "location" => "Iserlohn"],
+                ["status" => "telefon", "date" => "2024-11-18", "companyName" => "SystemPro", "location" => "Lüdenscheid"],
+                ["status" => "absage", "date" => "2024-11-13", "companyName" => "ITMax", "location" => "Hagen"]
+            ]]
         ]
     ],
-    [
-        "courseName" => "IT2021/01",
-        "firstLeader" => ["firstName" => "Andreas", "lastName" => "Lehmann", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Sandra", "lastName" => "Vogel", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Sophie", "lastName" => "Kraus", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Paul", "lastName" => "Zimmermann", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Laura", "lastName" => "Braun", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Elias", "lastName" => "Hofmann", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Johanna", "lastName" => "Pohl", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "David", "lastName" => "Voss", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Ella", "lastName" => "Seidel", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Felix", "lastName" => "Schuster", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Mia", "lastName" => "Körber", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Luis", "lastName" => "Ott", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Anna", "lastName" => "Seifert", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Ben", "lastName" => "Albrecht", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Emma", "lastName" => "Lenz", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Jonas", "lastName" => "Wenzel", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Lena", "lastName" => "Petersen", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Maximilian", "lastName" => "Bauer", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Hannah", "lastName" => "Riedel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Noah", "lastName" => "Franke", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Lea", "lastName" => "Schreiber", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Tim", "lastName" => "Geiger", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2021/07",
-        "firstLeader" => ["firstName" => "Michael", "lastName" => "Krüger", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Julia", "lastName" => "Hartmann", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Tim", "lastName" => "Werner", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Hannah", "lastName" => "Lang", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Ben", "lastName" => "Klein", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Emily", "lastName" => "Stein", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leon", "lastName" => "Arnold", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Sofia", "lastName" => "Wolff", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Samuel", "lastName" => "Brandt", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Mila", "lastName" => "Simon", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Henry", "lastName" => "Böhm", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lara", "lastName" => "Michel", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Niklas", "lastName" => "König", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Clara", "lastName" => "Keller", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Julian", "lastName" => "Jung", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Amelie", "lastName" => "Roth", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Fabian", "lastName" => "Krause", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Maja", "lastName" => "Huber", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Luca", "lastName" => "Schmitz", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Frieda", "lastName" => "Voigt", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Theo", "lastName" => "Winkler", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Isabella", "lastName" => "Groß", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2022/01",
-        "firstLeader" => ["firstName" => "Stefan", "lastName" => "Neumann", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Claudia", "lastName" => "Möller", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Jana", "lastName" => "Schulz", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Max", "lastName" => "Friedrich", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Lena", "lastName" => "Berger", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Oliver", "lastName" => "Herzog", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Sarah", "lastName" => "Vogt", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Moritz", "lastName" => "Bender", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Nele", "lastName" => "Kaiser", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Tobias", "lastName" => "Lehmann", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Paula", "lastName" => "Sauer", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Simon", "lastName" => "Engel", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Julia", "lastName" => "Böttcher", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Erik", "lastName" => "Hahn", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Klara", "lastName" => "Kunz", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Robin", "lastName" => "Schröder", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Ida", "lastName" => "Horn", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Vincent", "lastName" => "Fiedler", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Marlene", "lastName" => "Nagel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Anton", "lastName" => "Ziegler", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Mira", "lastName" => "Pfeiffer", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Adrian", "lastName" => "Förster", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2022/07",
-        "firstLeader" => ["firstName" => "Daniel", "lastName" => "Schmitt", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Katrin", "lastName" => "Meier", "gender" => "f"],
-        "students" => [
-            ["firstName" => "David", "lastName" => "Walter", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Nina", "lastName" => "Peters", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Erik", "lastName" => "Schwarz", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lisa", "lastName" => "Heinz", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Tom", "lastName" => "Busch", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Emely", "lastName" => "Stark", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Lukas", "lastName" => "Sommer", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Marie", "lastName" => "Gold", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Jacob", "lastName" => "Weise", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Elena", "lastName" => "Bayer", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Rafael", "lastName" => "Grimm", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Sophia", "lastName" => "Eckert", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Constantin", "lastName" => "Jäger", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Lilly", "lastName" => "Franke", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Mattis", "lastName" => "Bock", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Frieda", "lastName" => "Baum", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leopold", "lastName" => "Henkel", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Romy", "lastName" => "Pfeifer", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Valentin", "lastName" => "Runge", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Alma", "lastName" => "Brenner", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2023/01",
-        "firstLeader" => ["firstName" => "Max", "lastName" => "Mustermann", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Erika", "lastName" => "Musterfrau", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Anna", "lastName" => "Schmidt", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Tom", "lastName" => "Meyer", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Lisa", "lastName" => "Müller", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Jonas", "lastName" => "Weber", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Sarah", "lastName" => "Fischer", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Felix", "lastName" => "Wagner", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Laura", "lastName" => "Becker", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Lukas", "lastName" => "Schulz", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Emma", "lastName" => "Hoffmann", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Paul", "lastName" => "Koch", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Sophie", "lastName" => "Richter", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Maximilian", "lastName" => "Schröder", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Hannah", "lastName" => "Neumann", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Leon", "lastName" => "Krause", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Mia", "lastName" => "Lange", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Noah", "lastName" => "Schmitt", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Lena", "lastName" => "Werner", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "David", "lastName" => "Krüger", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Emily", "lastName" => "Hartmann", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Finn", "lastName" => "Zimmermann", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2023/07",
-        "firstLeader" => ["firstName" => "Peter", "lastName" => "Maier", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Sabine", "lastName" => "Roth", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Marie", "lastName" => "Jung", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Finn", "lastName" => "Lange", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Clara", "lastName" => "Frank", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Henry", "lastName" => "Braun", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Ella", "lastName" => "Klein", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Oskar", "lastName" => "Winter", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Mila", "lastName" => "Seidel", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Anton", "lastName" => "Vogel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Ida", "lastName" => "Kaiser", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Leonard", "lastName" => "Graf", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Charlotte", "lastName" => "Bergmann", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Theo", "lastName" => "Schuster", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Greta", "lastName" => "Ott", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Emil", "lastName" => "Busch", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Lina", "lastName" => "Schubert", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Jakob", "lastName" => "Voigt", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Emilia", "lastName" => "Herrmann", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Matteo", "lastName" => "Keller", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lia", "lastName" => "Simon", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Milan", "lastName" => "Winkler", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2024/01",
-        "firstLeader" => ["firstName" => "Hans", "lastName" => "Müller", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Anna", "lastName" => "Schmidt", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Oliver", "lastName" => "Schulze", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Sophia", "lastName" => "Hoffmann", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Luis", "lastName" => "Becker", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Isabella", "lastName" => "Arnold", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leo", "lastName" => "Werner", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Amelie", "lastName" => "Fuchs", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Samuel", "lastName" => "Lorenz", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Johanna", "lastName" => "Berger", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Elias", "lastName" => "Haas", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Nele", "lastName" => "Albrecht", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Julian", "lastName" => "Seifert", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Klara", "lastName" => "Petersen", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Vincent", "lastName" => "Riedel", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Marlene", "lastName" => "Bauer", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Robin", "lastName" => "Geiger", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Maja", "lastName" => "Franke", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Adrian", "lastName" => "Schreiber", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Frieda", "lastName" => "Wenzel", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Valentin", "lastName" => "Lenz", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Alma", "lastName" => "Körber", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2024/07",
-        "firstLeader" => ["firstName" => "Peter", "lastName" => "Fischer", "gender" => "m"],
-        "secondLeader" => ["firstName" => "Laura", "lastName" => "Weber", "gender" => "f"],
-        "students" => [
-            ["firstName" => "Emily", "lastName" => "Baumann", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Elias", "lastName" => "Huber", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Amelie", "lastName" => "Schuster", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Rafael", "lastName" => "Böhm", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Lilly", "lastName" => "Michel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Constantin", "lastName" => "Brandt", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Romy", "lastName" => "Roth", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leopold", "lastName" => "Krause", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Alma", "lastName" => "Schmitz", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Mattis", "lastName" => "Vogt", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Greta", "lastName" => "Huber", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Emil", "lastName" => "Groß", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lina", "lastName" => "Winkler", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Jakob", "lastName" => "König", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Emilia", "lastName" => "Jung", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Matteo", "lastName" => "Keller", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Lia", "lastName" => "Hartmann", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Milan", "lastName" => "Simon", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Zoe", "lastName" => "Voigt", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Anton", "lastName" => "Herrmann", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2025/01",
-        "firstLeader" => ["firstName" => "Sophie", "lastName" => "Wagner", "gender" => "f"],
-        "secondLeader" => ["firstName" => "Lukas", "lastName" => "Becker", "gender" => "m"],
-        "students" => [
-            ["firstName" => "Maximilian", "lastName" => "Graf", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Isabella", "lastName" => "Köhler", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Leo", "lastName" => "Stein", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Charlotte", "lastName" => "Wolf", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Henry", "lastName" => "Herrmann", "profession" => "FISI", "status" => "yellow"],
-            ["firstName" => "Ella", "lastName" => "Vogel", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Oskar", "lastName" => "Brenner", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Mila", "lastName" => "Eckert", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Anton", "lastName" => "Jäger", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Ida", "lastName" => "Bock", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leonard", "lastName" => "Baum", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Clara", "lastName" => "Henkel", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Theo", "lastName" => "Pfeifer", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Emilia", "lastName" => "Runge", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Matteo", "lastName" => "Gold", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lia", "lastName" => "Weise", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Milan", "lastName" => "Bayer", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Zoe", "lastName" => "Grimm", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Samuel", "lastName" => "Heinz", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Nele", "lastName" => "Stark", "profession" => "FISI", "status" => "green"]
-        ]
-    ],
-    [
-        "courseName" => "IT2025/07",
-        "firstLeader" => ["firstName" => "Julia", "lastName" => "Hoffmann", "gender" => "f"],
-        "secondLeader" => ["firstName" => "Tim", "lastName" => "Schäfer", "gender" => "m"],
-        "students" => [
-            ["firstName" => "Charlotte", "lastName" => "Vogel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Henry", "lastName" => "Herrmann", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Emilia", "lastName" => "Wolf", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Rafael", "lastName" => "Sommer", "profession" => "FIAE", "status" => "red"],
-            ["firstName" => "Lilly", "lastName" => "Busch", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Constantin", "lastName" => "Ott", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Romy", "lastName" => "Schubert", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Leopold", "lastName" => "Lorenz", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Alma", "lastName" => "Haas", "profession" => "FIDM", "status" => "red"],
-            ["firstName" => "Mattis", "lastName" => "Albrecht", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Greta", "lastName" => "Seifert", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Emil", "lastName" => "Petersen", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Lina", "lastName" => "Riedel", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Jakob", "lastName" => "Geiger", "profession" => "FISI", "status" => "red"],
-            ["firstName" => "Frieda", "lastName" => "Franke", "profession" => "FIDM", "status" => "green"],
-            ["firstName" => "Valentin", "lastName" => "Schreiber", "profession" => "FIAE", "status" => "yellow"],
-            ["firstName" => "Maja", "lastName" => "Wenzel", "profession" => "FISI", "status" => "green"],
-            ["firstName" => "Adrian", "lastName" => "Lenz", "profession" => "FIDM", "status" => "yellow"],
-            ["firstName" => "Klara", "lastName" => "Körber", "profession" => "FIAE", "status" => "green"],
-            ["firstName" => "Vincent", "lastName" => "Pohl", "profession" => "FISI", "status" => "green"]
-        ]
-    ]
+    
 ];
 echo json_encode($courses, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 }
