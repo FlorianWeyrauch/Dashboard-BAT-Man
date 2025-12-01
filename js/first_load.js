@@ -1,59 +1,41 @@
 async function first_load() {
-    get_token();
+    check_token()
 }
-
-function get_token() {
-    //schauen ob schon ein Token im lokal Storage ist
-    let token = localStorage.getItem('LogToken');
+function check_token() {
+    const token = localStorage.getItem("auth_token");
     if (token) {
-        // Token ist vorhanden
-        // Ajax request um zu validieren
+        //TODO: Token ist vorhanden, Token check aufrufen
+        // schauen ob es 5 minuten token ist
+        // Wenn ja, dann anzeige Checkbox (ob Longtime Token 4 Wochen gewünscht ist) an und Vorname und Nachname weg dafür Name und Vorname einblenden
+        // Wenn es Longterm Token ist, dann
+        // Direkt weiter leiten zu dashboard
+        // TODO: Authentifiziere den Benutzer mit dem Token
+        console.log("Using stored token:", token);
         $.ajax({
-            url: "./ajax/validate_token.php",
+            url: "./ajax/verifyUser.php",
             type: "POST",
-            data: { token: token },
-            success: function (response) {
-                console.log("Token validation response:", response);
+            headers: {
+                'X-CSRF-Token': 'sfdfg55ss5s45dcdsdsfgdg',  // AUTH-Token aus api_token.tok
+                'X-Request-Source': 'AUTH'
             },
-            error: function (xhr, status, error) {
-                console.error("Token validation error:", error);
+            success: function (response) {
+                console.log("Auth token received:", response);
             }
         });
-
     } else {
-        // load view to get a new token
-        // Field Vorname und Name anzeigen
-        // Get Token button anzeigen
-        $("#GetToken").on("click", function () {
-            // get name and vorname values
-            var name = $("#name").val();
-            var vorname = $("#vorname").val();
-
-            // send ajax request to get_token.php
-            $.ajax({
-                url: "./ajax/get_token.php",
-                type: "POST",
-                headers: {
-                    'X-CSRF-Token': window.CSRF_TOKEN || '',
-                    'X-Request-Source': 'dashboard-client'
-                },
-                data: {
-                    name: name,
-                    vorname: vorname
-                },
-                success: function (response) {
-                    console.log("Token received:", response);
-                    if (response.token) {
-                        localStorage.setItem('LogToken', response.token);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error getting token:", error);
-                    if (xhr.status === 403) {
-                        console.error("CSRF validation failed");
-                    }
-                }
-            });
-        });
+        // Token ist nicht vorhanden, zeige Login-Formular an
+        console.log("No token found, showing login form.");
     }
 }
+
+
+
+
+//TODO: hier die Weiche einbauem ob token schon in Stroage ist
+// Wenn ja, dann benutze den Token aus dem Storage
+// Wenn nein, dann Zeige Login Formular an Name Vorname an
+//weiterleitung zum self_tok.php um die Userdaten zur Verifizierungsseite (AUTH) zu schicken
+//Wenn erfolg erhalte ich den Token und speichere ihn im Storage
+//AUTH muss userdaten Prüfen / validieren bei Erfolg E-Mail mit Token (5min gültig) 
+//an den Benutzer zurückgeben und mir den Token zurückgeben um Ihn im Storage zu speichern
+

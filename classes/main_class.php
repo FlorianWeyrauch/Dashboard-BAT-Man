@@ -1,18 +1,12 @@
 <?php
-    require_once 'session.php';
+    require_once 'session_class.php';
+
     class Main{
-        private $all_api_tokens= [];
+        private MySessionHandler  $session;
+        public function __construct(MySessionHandler $session) {
+            $this->session = $session;
+            
+        }
+
         
-        public function __construct() {
-            // Initialization code here
-            $this->session = new MySessionHandler();
-            $this->all_api_tokens = $this->AlleApiTokens();
-        }
-
-        public function AlleApiTokens() {
-            // Code to retrieve all API tokens
-
-
-        }
-
     }

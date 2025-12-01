@@ -1,11 +1,11 @@
 <?php
+require_once 'token_class.php';
 header('Content-Type: application/json; charset=utf-8');
-include_once '../classes/main_class.php';
-$main = new Main();
-
+$site = 'verify_user';
+$token = new ApiToken();
 // CSRF-Token validieren
 $headers = getallheaders();
-if (!isset($headers['X-CSRF-Token']) || $headers['X-CSRF-Token'] !== $main->self_token) {
+if (!isset($headers['X-CSRF-Token']) || $headers['X-CSRF-Token'] !== $token->getApiTokenToSite($site, 'AUTH')) {
     http_response_code(403);
     echo json_encode([
         'error' => true,
